@@ -1,0 +1,26 @@
+name: validate
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Regenerate the port from the pinned upstream commit
+        run: |
+          set -euo pipefail
+          sha=$(node -e "console.log(require('./UPSTREAM.json').commit)")
+          git clone --filter=blob:none --no-checkout https://github.com/cursor/plugins.git /tmp/plugins
+          git -C /tmp/plugins fetch --depth 1 origin "$sha"
+          git -C /tmp/plugins checkout FETCH_HEAD
+          node scripts/port.mjs /tmp/plugins/pstack
+          git diff --exit-code
+          git status --porcelain
+      - name: Validate skills, agents, and hooks
+        run: node scripts/validate.mjs
