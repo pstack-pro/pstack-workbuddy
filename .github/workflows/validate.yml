@@ -22,5 +22,5 @@ jobs:
           node scripts/port.mjs /tmp/plugins/pstack
           git diff --exit-code
           git status --porcelain
-      - name: Validate skills, agents, and hooks
+      - name: Validate skills, agents, hooks, and the SkillHub bundle
         run: node scripts/validate.mjs

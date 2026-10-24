@@ -48,6 +48,25 @@ cp -R pstack-workbuddy/skills/. ~/.workbuddy/skills/
 
 手动复制**不会**安装 `agents/` 和 `hooks/`。需要子代理和粘性模式时，用插件安装。
 
+### 从 SkillHub / zip 安装
+
+SkillHub（skillhub.cn）和 WorkBuddy 的「上传技能」都是一个 zip 里一个技能，`SKILL.md` 在 zip 根上。在仓库里生成这个包：
+
+```bash
+node scripts/bundle.mjs
+```
+
+产物是 `dist/pstack-<版本>.zip`（版本来自 `UPSTREAM.json`，当前是 `dist/pstack-0.15.32.zip`）。解压到 `~/.workbuddy/skills/pstack/`：
+
+```bash
+mkdir -p ~/.workbuddy/skills/pstack
+unzip -o -d ~/.workbuddy/skills/pstack dist/pstack-0.15.32.zip
+```
+
+也可以在 SkillHub 安装，slug 是 `pstack`。WorkBuddy 5.8.3 会发现里面 `skills/<名字>/SKILL.md` 这一层，每个技能单独可调用，命令不带 `pstack:` 前缀，例如 `/setup-pstack`、`/poteto-mode`。列表没刷新就重启 WorkBuddy。
+
+这次安装带上技能、指南和 `agents/` 里的参考文档。钩子不在包里：`/poteto-mode` 每开一个新任务要再调用一次，`~/.workbuddy/pstack-models.md` 也不会在会话开始时注入，技能要模型角色时直接读那个文件。`agents/poteto-agent.md` 和 `agents/comment-sicko.md` 没有注册成子代理。技能若要求 `pstack:poteto-agent` 或 `pstack:comment-sicko`，用 `general-purpose` 子代理，把对应文档的正文和本目录 `skills/poteto-mode/SKILL.md` 的绝对路径写进提示。要跨回合保持和注册好的代理，用上面的插件市场安装 `pstack@pstack-workbuddy`。
+
 ## 开始
 
 1. `/pstack:setup-pstack`：读取 `~/.workbuddy/models.json` 里的模型 `id`（只读 id，不读密钥），确认后写入 `~/.workbuddy/pstack-models.md`。会话开始时的钩子会把这个文件注入上下文。WorkBuddy 没有会自动加载它的规则目录。
@@ -70,6 +89,7 @@ cp -R pstack-workbuddy/skills/. ~/.workbuddy/skills/
 
 ```bash
 node scripts/port.mjs /path/to/plugins/pstack
+node scripts/bundle.mjs
 node scripts/validate.mjs
 ```
 
@@ -86,5 +106,7 @@ node scripts/validate.mjs
 Unofficial community port of [pstack](https://github.com/cursor/plugins/tree/main/pstack) (Lauren Tan / poteto) for the Tencent WorkBuddy desktop app. Not affiliated with Cursor or Tencent. Skill text stays in English. Upstream pin: pstack **0.15.32** at `e73df471cd4bd918367e99f3dd9c51bd53ddf5f0`, 58 skills and 2 agents.
 
 The live config root is `~/.workbuddy/`. Install from this repo's `.workbuddy-plugin/marketplace.json` (GitHub repo or zip), then install `pstack@pstack-workbuddy`. Or copy `skills/` into `~/.workbuddy/skills/`. A manual copy has no `pstack:` prefix and does not load hooks.
+
+`node scripts/bundle.mjs` writes `dist/pstack-<version>.zip` for SkillHub and WorkBuddy's skill upload. Unzip it to `~/.workbuddy/skills/pstack/`, or install slug `pstack` from SkillHub. Nested `skills/<name>/SKILL.md` files show up as their own commands. That install leaves out hooks and does not register the files in `agents/`.
 
 Then `/pstack:setup-pstack`, which reads model `id` fields from `~/.workbuddy/models.json` and writes `~/.workbuddy/pstack-models.md`. The session hook injects that file. `/pstack:poteto-mode <task>` stays on until `/pstack:poteto-mode off`. Details are in [PORTING.md](PORTING.md). The MIT text in [LICENSE](LICENSE) is Lauren Tan's.

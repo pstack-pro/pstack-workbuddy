@@ -272,7 +272,7 @@ for (const line of addressed) {
 
 function scanBanned(dir) {
 	for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-		if (entry.name === ".git" || entry.name === "node_modules") continue;
+		if (entry.name === ".git" || entry.name === "node_modules" || entry.name === "dist") continue;
 		const full = path.join(dir, entry.name);
 		const rel = path.relative(root, full);
 		if (rel === "PORTING.md") continue;
@@ -288,6 +288,12 @@ function scanBanned(dir) {
 		problems.push(`${rel}: contains ${banned}: ${line.trim().slice(0, 140)}`);
 	}
 }
+const bundled = spawnSync(process.execPath, [path.join(root, "scripts", "bundle.mjs"), "--check"], {
+	cwd: root,
+	stdio: "inherit",
+});
+if (bundled.status !== 0) problems.push("SkillHub bundle check failed");
+
 scanBanned(root);
 
 if (problems.length) {

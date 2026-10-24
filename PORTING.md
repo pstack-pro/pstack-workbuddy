@@ -124,12 +124,18 @@ Hard failures: leftover `AskQuestion`, `generalPurpose`, a `.cursor/` path, `pst
 
 - `node scripts/validate.mjs`.
 - Hook fixtures: help does not stick, `/pstack:poteto-mode` sticks, a later turn re-injects, another `session_id` stays off, `off` clears, bare `/poteto-mode` sticks. The model file is read from `~/.workbuddy/pstack-models.md`.
+- `node scripts/bundle.mjs` writes `dist/pstack-<version>.zip` with `SKILL.md` at the zip root and each skill at `skills/<name>/SKILL.md`. The build fails when the file count passes 200, the zip or its uncompressed size passes 10MB, the version is not SemVer, or the SkillHub slug is not `pstack`.
+
+## Verified on WorkBuddy 5.8.3
+
+- A wrapper installed at `~/.workbuddy/skills/<wrapper>/` discovers nested skills at `<wrapper>/skills/<name>/SKILL.md`. Each nested skill is invocable on its own. The same files placed at `<wrapper>/<name>/SKILL.md` are not discovered.
+- A bundle built in that shape was installed. `/setup-pstack` and `/poteto-mode` ran. SkillHub slug for this package is `pstack`, and the unzip directory is `~/.workbuddy/skills/pstack/`.
 
 ## Not verified in WorkBuddy
 
 - Adding this GitHub repo or a zip from the desktop plugin screen. The owner's `known_marketplaces.json` stores markets as `directory` or `zip`. The in-app button labels were not clicked.
 - Whether a copied skill shows up before restart. `~/.workbuddy/.skill-list-cache.json` exists. An existing skill such as `grill-me` also has `_skillhub_meta.json`. This port does not write that file. It is unknown whether a hand-copied skill needs it.
-- A real `/pstack:poteto-mode` turn, the sticky hook inside the app, and `/pstack:setup-pstack` writing the model file from the owner's `models.json`.
+- Plugin commands `/pstack:poteto-mode` and `/pstack:setup-pstack` inside the app, the sticky hook, and whether setup wrote `~/.workbuddy/pstack-models.md` from the owner's `models.json`. The bundle commands `/poteto-mode` and `/setup-pstack` did run. The written model file was not inspected.
 - Whether `session_id` stays stable across resume. Sticky state is keyed by that id.
 - `TaskCreate`, `EnterWorktree`, and `AskUserQuestion` on the desktop. Those names are carried as the tool names the skills already use. They were not called against the app.
 - Plugin `hooks/hooks.json` actually running under WorkBuddy 5.8.3. The hook command relies on the loader substituting `${CLAUDE_PLUGIN_ROOT}`.

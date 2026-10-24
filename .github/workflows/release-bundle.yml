@@ -1,0 +1,33 @@
+name: release bundle
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build the SkillHub zip
+        run: node scripts/bundle.mjs
+      - name: Attach the zip to the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          version=$(node -p "require('./UPSTREAM.json').pstack")
+          asset="dist/pstack-${version}.zip"
+          notes="SkillHub bundle for WorkBuddy. Unzip into ~/.workbuddy/skills/pstack/ or install slug pstack."
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" "$asset" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" "$asset" --title "pstack ${version}" --notes "$notes"
+          fi
