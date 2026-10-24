@@ -63,7 +63,9 @@ mkdir -p ~/.workbuddy/skills/pstack
 unzip -o -d ~/.workbuddy/skills/pstack dist/pstack-0.15.32.zip
 ```
 
-也可以在 SkillHub 安装，slug 是 `pstack`。WorkBuddy 5.8.3 会发现里面 `skills/<名字>/SKILL.md` 这一层，每个技能单独可调用，命令不带 `pstack:` 前缀，例如 `/setup-pstack`、`/poteto-mode`。列表没刷新就重启 WorkBuddy。
+也可以在 SkillHub 安装，slug 是 `pstack`，卡片上的显示名也是 `pstack`。WorkBuddy 5.8.3 会发现里面 `skills/<名字>/SKILL.md` 这一层，每个技能单独可调用，命令不带 `pstack:` 前缀，例如 `/setup-pstack`、`/poteto-mode`。列表没刷新就重启 WorkBuddy。
+
+SkillHub 上每改一处都要换一个新版本，显示名也算。仓库里先改好，市场上的条目等下一次跟上上游版本时一起更新。
 
 SkillHub 只收 `.md`、`.txt`、`.json`、`.ts`、`.mjs`、`.js`、`.sh`、`.py`、`.yaml`、`.yml`。这个 zip 里许可证是 `LICENSE.md`，移植说明是 `NOTICE.md`，指南图片没有打进去。`skills/poteto-mode/scripts/bun.lock` 不在包里，bun 会自己再生成。`skills/statechart/scripts/test/` 是测试夹具，也没有打进去。决策日志模板在包里是 `skills/show-me-your-work/references/decision-log-template.txt`，内容和原来的 `.tsv` 一样。技能若写着运行 `scripts/watch-pr/watch-pr`，包里的文件是 `skills/poteto-mode/scripts/watch-pr/watch-pr.ts`，用 `bun` 加上原来的参数运行。
 
@@ -109,6 +111,6 @@ Unofficial community port of [pstack](https://github.com/cursor/plugins/tree/mai
 
 The live config root is `~/.workbuddy/`. Install from this repo's `.workbuddy-plugin/marketplace.json` (GitHub repo or zip), then install `pstack@pstack-workbuddy`. Or copy `skills/` into `~/.workbuddy/skills/`. A manual copy has no `pstack:` prefix and does not load hooks.
 
-`node scripts/bundle.mjs` writes `dist/pstack-<version>.zip` for SkillHub and WorkBuddy's skill upload. Unzip it to `~/.workbuddy/skills/pstack/`, or install slug `pstack` from SkillHub. Nested `skills/<name>/SKILL.md` files show up as their own commands. That install leaves out hooks and does not register the files in `agents/`. The zip names the license `LICENSE.md` and the port notice `NOTICE.md`, drops guide images, `skills/poteto-mode/scripts/bun.lock`, and `skills/statechart/scripts/test/`, ships the decision-log template as `decision-log-template.txt`, and ships the bun launcher as `skills/poteto-mode/scripts/watch-pr/watch-pr.ts`.
+`node scripts/bundle.mjs` writes `dist/pstack-<version>.zip` for SkillHub and WorkBuddy's skill upload. Unzip it to `~/.workbuddy/skills/pstack/`, or install slug `pstack` from SkillHub. The card name is `pstack`. SkillHub treats every change, including that name, as a new version, so the store listing is updated together with the next upstream sync. Nested `skills/<name>/SKILL.md` files show up as their own commands. That install leaves out hooks and does not register the files in `agents/`. The zip names the license `LICENSE.md` and the port notice `NOTICE.md`, drops guide images, `skills/poteto-mode/scripts/bun.lock`, and `skills/statechart/scripts/test/`, ships the decision-log template as `decision-log-template.txt`, and ships the bun launcher as `skills/poteto-mode/scripts/watch-pr/watch-pr.ts`.
 
 Then `/pstack:setup-pstack`, which reads model `id` fields from `~/.workbuddy/models.json` and writes `~/.workbuddy/pstack-models.md`. The session hook injects that file. `/pstack:poteto-mode <task>` stays on until `/pstack:poteto-mode off`. Details are in [PORTING.md](PORTING.md). The MIT text in [LICENSE](LICENSE) is Lauren Tan's.

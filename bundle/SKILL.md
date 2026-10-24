@@ -2,7 +2,7 @@
 name: pstack
 slug: pstack
 version: 0.15.32
-displayName: "pstack (WorkBuddy)"
+displayName: "pstack"
 summary: "pstack, Lauren Tan's (poteto) agent workflow, ported to WorkBuddy: 58 skills (poteto-mode, playbooks, principles, review and verification tools) in one install."
 description: "Use when the user wants pstack or poteto-mode on WorkBuddy, asks which pstack skill or playbook fits a task, how to set up pstack, or a /pstack:<name> or /<name> pstack command is not visible. Entry point and index for the 58 bundled pstack skills."
 tags: [pstack, poteto, workbuddy, workflow, agent-skills, code-review, verification]

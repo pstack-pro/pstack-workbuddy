@@ -217,7 +217,7 @@ function assertFrontmatter(text, version) {
 	if (!SLUG_RE.test(fields.slug)) fail(`slug does not match ${SLUG_RE}`);
 	if (fields.version !== version) fail(`root skill version ${fields.version} != ${version}`);
 	if (!SEMVER.test(fields.version)) fail(`version ${fields.version} is not SemVer`);
-	if (fields.displayName !== "pstack (WorkBuddy)") fail("displayName changed");
+	if (fields.displayName !== "pstack") fail("displayName must stay pstack");
 	if (fields.license !== "MIT") fail("license must stay MIT");
 	if (fields.homepage !== HOMEPAGE) fail("homepage changed");
 	if (!fields.summary || !fields.description) fail("summary and description are required");
