@@ -6,16 +6,16 @@ disable-model-invocation: true
 
 # Why
 
-> **CodeBuddy.** Read `docs/harness/codebuddy.md` (plugin root) before you follow the rest of this file.
-> Cursor compound slugs (`claude-opus-*-xhigh`, `grok-*-xhigh-fast`, `cursor-grok-*`, `composer-*`) are not CodeBuddy model ids. A bare name printed by `codebuddy --help` still has to be confirmed for this session. Read `~/.codebuddy/rules/pstack-models.md` and omit `model` when the role line is missing.
-> CodeBuddy has no Custom Mode, no `/loop` command, no Bugbot, no cursor-team-kit, and no Cursor Automations or cloud agents. `-fast` is not a CodeBuddy model suffix. Do not pass a field the Agent tool rejects.
+> **WorkBuddy.** Read `docs/harness/workbuddy.md` (plugin root) before you follow the rest of this file.
+> Cursor compound slugs (`claude-opus-*-xhigh`, `grok-*-xhigh-fast`, `cursor-grok-*`, `composer-*`) are not WorkBuddy model ids. Read `~/.workbuddy/pstack-models.md` and omit `model` when the role line is missing.
+> WorkBuddy has no Custom Mode, no `/loop` command, no Bugbot, no cursor-team-kit, and no Cursor Automations or cloud agents. `-fast` is not a model-id suffix. Do not pass a field the Agent tool rejects.
 
 
 Investigate the motivation and intent behind code. The companion `how` skill answers what the code does and how it works. `why` answers what forces led to its shape.
 
 Each spawn below names a role line in the `pstack-models.md` rule and a default. Set `model` to that line's value, or to the default if the rule or the line is missing. Leave `model` unset when the value is `auto` or `inherit-parent`. If the Agent tool rejects a slug, use the default and say so. If it rejects the default, use the closest valid slug of the same family from its error message. Pick each subagent's reasoning level and fast or standard speed for the job, per the Subagents section of the **poteto-mode** skill.
 
-Every spawn is `general-purpose` with `subagent_type: "general-purpose"` (agent mode). **Do not use Explore when the worker needs MCP.** CodeBuddy has no Ask mode, and Explore is documented as strictly read-only. Use `general-purpose` and tell it not to edit. Investigators still shouldn't write anything. Investigators still shouldn't write anything.
+Every spawn is `general-purpose` with `subagent_type: "general-purpose"` (agent mode). **Do not use Explore when the worker needs MCP.** Explore is strictly read-only. WorkBuddy's ask interaction mode is also read-only, and it is not a subagent type. Use `general-purpose` and tell it not to edit. Investigators still shouldn't write anything. Investigators still shouldn't write anything.
 
 ## Operating Posture
 
@@ -37,7 +37,7 @@ Before spawning investigators, build the seed context inline: file paths and lin
 
 ### Discovery
 
-Before spawning investigators, list the MCP servers this CodeBuddy session exposes. CodeBuddy does not document a Cursor-style `mcps/` directory. Skip a source whose server is absent and say so.
+Before spawning investigators, list the MCP servers this WorkBuddy session exposes. WorkBuddy does not document a Cursor-style `mcps/` directory. Skip a source whose server is absent and say so.
 
 Map each available MCP to one evidence category:
 

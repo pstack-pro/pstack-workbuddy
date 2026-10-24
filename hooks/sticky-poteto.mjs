@@ -1,4 +1,4 @@
-// Keep /poteto-mode in context on later turns. CodeBuddy has no Custom Mode.
+// Keep /poteto-mode in context on later turns. WorkBuddy has no Custom Mode.
 // A prompt that starts with /pstack:poteto-mode or /poteto-mode turns the session on.
 // /pstack:poteto-mode off, or "exit poteto-mode", turns it off.
 import * as fs from "node:fs";
@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { commandAction, emit, isOn, readStdin, setOn } from "./state.mjs";
 
 const root =
-	process.env.CODEBUDDY_PLUGIN_ROOT ||
+	process.env.WORKBUDDY_PLUGIN_ROOT ||
 	process.env.CLAUDE_PLUGIN_ROOT ||
 	path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -34,7 +34,7 @@ try {
 		if (action) {
 			emit(
 				"UserPromptSubmit",
-				"The UserPromptSubmit hook did not receive session_id, so poteto-mode cannot stay sticky. CodeBuddy has no Custom Mode. Re-invoke /pstack:poteto-mode on the next task.",
+				"The UserPromptSubmit hook did not receive session_id, so poteto-mode cannot stay sticky. WorkBuddy has no Custom Mode. Re-invoke /pstack:poteto-mode on the next task.",
 			);
 		} else {
 			emit("UserPromptSubmit", "");
@@ -47,7 +47,7 @@ try {
 	if (!isOn(sessionId)) {
 		const offNote =
 			action === "off"
-				? "poteto-mode is off for this session. Do not keep applying it. CodeBuddy has no Custom Mode."
+				? "poteto-mode is off for this session. Do not keep applying it. WorkBuddy has no Custom Mode."
 				: "";
 		emit("UserPromptSubmit", offNote);
 		process.exit(0);
@@ -55,9 +55,9 @@ try {
 
 	const context = [
 		"pstack poteto-mode is sticky for this session.",
-		"CodeBuddy has no Custom Mode. This hook re-injects the skill on every user prompt until the user sends `/pstack:poteto-mode off` (or `exit poteto-mode`).",
+		"WorkBuddy has no Custom Mode. This hook re-injects the skill on every user prompt until the user sends `/pstack:poteto-mode off` (or `exit poteto-mode`).",
 		"Follow the skill below for this turn, including playbook selection. Spawn playbook delegates with subagent_type `pstack:poteto-agent`.",
-		"Cursor model ids are not CodeBuddy model ids. Use ~/.codebuddy/rules/pstack-models.md when it exists, otherwise omit Agent `model`.",
+		"Cursor model ids are not WorkBuddy model ids. Use ~/.workbuddy/pstack-models.md when it exists, otherwise omit Agent `model`.",
 		"<pstack_poteto_mode>",
 		skillBody(),
 		"</pstack_poteto_mode>",

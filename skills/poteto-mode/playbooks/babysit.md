@@ -1,10 +1,10 @@
-> **CodeBuddy.** Read `docs/harness/codebuddy.md` (plugin root) before you follow the rest of this file.
-> Cursor compound slugs (`claude-opus-*-xhigh`, `grok-*-xhigh-fast`, `cursor-grok-*`, `composer-*`) are not CodeBuddy model ids. A bare name printed by `codebuddy --help` still has to be confirmed for this session. Read `~/.codebuddy/rules/pstack-models.md` and omit `model` when the role line is missing.
-> CodeBuddy has no Custom Mode, no `/loop` command, no Bugbot, no cursor-team-kit, and no Cursor Automations or cloud agents. `-fast` is not a CodeBuddy model suffix. Do not pass a field the Agent tool rejects.
+> **WorkBuddy.** Read `docs/harness/workbuddy.md` (plugin root) before you follow the rest of this file.
+> Cursor compound slugs (`claude-opus-*-xhigh`, `grok-*-xhigh-fast`, `cursor-grok-*`, `composer-*`) are not WorkBuddy model ids. Read `~/.workbuddy/pstack-models.md` and omit `model` when the role line is missing.
+> WorkBuddy has no Custom Mode, no `/loop` command, no Bugbot, no cursor-team-kit, and no Cursor Automations or cloud agents. `-fast` is not a model-id suffix. Do not pass a field the Agent tool rejects.
 
 ### Babysit
 
-**You own the merge frontier. Declare a mode, clear one PR at a time, stop where the human's call begins.** This playbook is the babysit flow. CodeBuddy has no built-in babysit skill, so do not look for a host skill with the same description. A request to land or ship is `playbooks/shipping.md`, which begins where this playbook ends.
+**You own the merge frontier. Declare a mode, clear one PR at a time, stop where the human's call begins.** This playbook is the babysit flow. WorkBuddy has no built-in babysit skill, so do not look for a host skill with the same description. A request to land or ship is `playbooks/shipping.md`, which begins where this playbook ends.
 
 Babysitting starts when the user asks for it, which is normally once a phase or a whole stack is built, not when a PR opens. Finish the stack, get it green here, then land it through Shipping.
 

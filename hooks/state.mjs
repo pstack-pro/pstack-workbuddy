@@ -1,4 +1,5 @@
-// Session sticky flag for /poteto-mode. The host sets CODEBUDDY_PLUGIN_DATA.
+// Session sticky flag for /poteto-mode. Prefer WORKBUDDY_PLUGIN_DATA.
+// Otherwise keep state under ~/.workbuddy, which is the desktop config root.
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
@@ -6,10 +7,9 @@ import * as path from "node:path";
 const MAX_AGE_MS = 14 * 24 * 60 * 60 * 1000;
 
 export function dataDir() {
-	if (process.env.CODEBUDDY_PLUGIN_DATA) return process.env.CODEBUDDY_PLUGIN_DATA;
-	if (process.env.CLAUDE_PLUGIN_DATA) return process.env.CLAUDE_PLUGIN_DATA;
+	if (process.env.WORKBUDDY_PLUGIN_DATA) return process.env.WORKBUDDY_PLUGIN_DATA;
 	const home = process.env.HOME || os.homedir();
-	return path.join(home, ".codebuddy", "plugins", "data", "pstack");
+	return path.join(home, ".workbuddy", "plugins", "data", "pstack");
 }
 
 function statePath() {

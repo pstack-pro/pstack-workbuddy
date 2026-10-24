@@ -1,8 +1,8 @@
 # Run work while you sleep
 
-> **CodeBuddy.** Read `docs/harness/codebuddy.md` (plugin root) before you follow the rest of this file.
-> Cursor compound slugs (`claude-opus-*-xhigh`, `grok-*-xhigh-fast`, `cursor-grok-*`, `composer-*`) are not CodeBuddy model ids. A bare name printed by `codebuddy --help` still has to be confirmed for this session. Read `~/.codebuddy/rules/pstack-models.md` and omit `model` when the role line is missing.
-> CodeBuddy has no Custom Mode, no `/loop` command, no Bugbot, no cursor-team-kit, and no Cursor Automations or cloud agents. `-fast` is not a CodeBuddy model suffix. Do not pass a field the Agent tool rejects.
+> **WorkBuddy.** Read `docs/harness/workbuddy.md` (plugin root) before you follow the rest of this file.
+> Cursor compound slugs (`claude-opus-*-xhigh`, `grok-*-xhigh-fast`, `cursor-grok-*`, `composer-*`) are not WorkBuddy model ids. Read `~/.workbuddy/pstack-models.md` and omit `model` when the role line is missing.
+> WorkBuddy has no Custom Mode, no `/loop` command, no Bugbot, no cursor-team-kit, and no Cursor Automations or cloud agents. `-fast` is not a model-id suffix. Do not pass a field the Agent tool rejects.
 
 
 This is the payoff for everything before it. An agent you can trust to verify its own work is an agent you can leave alone with a hard task. What makes that safe isn't hope. It's a checkable finish condition, an isolated worktree or cloud agent, and a decision log you audit in the morning.
@@ -28,7 +28,7 @@ A good handoff has the goal, the finish condition, permissions, and an escape ha
 /pstack:poteto-mode im going to bed. migrate every caller to the new parser in a fresh worktree off <base>.
 done means zero old callers, all parser fixtures pass, old api deleted.
 keep a decision log. don't ask me before committing.
-keep going until done. CodeBuddy has no /loop command. if you're truly stuck after a few hours, stop and write up why.
+keep going until done. WorkBuddy has no /loop command. if you're truly stuck after a few hours, stop and write up why.
 ```
 
 Walk through what each line buys you:
@@ -37,12 +37,12 @@ Walk through what each line buys you:
 - "done means..." turns the goal into checks every iteration can run.
 - "fresh worktree off `<base>`" keeps the run from colliding with anything else you have open.
 - "don't ask me before committing" pre-answers the permission the agent would otherwise block on.
-- CodeBuddy has no `/loop` command. The [Autonomous run playbook](../../skills/poteto-mode/playbooks/autonomous-run.md) re-checks the finish condition. `CronCreate` can schedule a later check. It is not `/loop`.
+- WorkBuddy has no `/loop` command. The [Autonomous run playbook](../../skills/poteto-mode/playbooks/autonomous-run.md) re-checks the finish condition. `CronCreate` can schedule a later check. It is not `/loop`.
 - The escape hatch lets it stop at a genuine dead end and write up why, which beats eight hours of creative goal reinterpretation.
 
 Because you'll review this work after stepping away, `/pstack:poteto-mode` routes it through [`/pstack:figure-it-out`](../../skills/figure-it-out/SKILL.md), which designs the run's phases before any code and wires in the decision log.
 
-To stop a run on purpose, tell the agent to pause, or that you're about to go offline or restart WorkBuddy or CodeBuddy. The [Pause safely playbook](../../skills/poteto-mode/playbooks/pause-safely.md) finishes or backs out of the current step, commits a work-in-progress checkpoint, and writes a resume note. A fresh chat picks the work up from that note through the Session pickup playbook. Saying "keep going" never triggers a pause.
+To stop a run on purpose, tell the agent to pause, or that you're about to go offline or restart WorkBuddy. The [Pause safely playbook](../../skills/poteto-mode/playbooks/pause-safely.md) finishes or backs out of the current step, commits a work-in-progress checkpoint, and writes a resume note. A fresh chat picks the work up from that note through the Session pickup playbook. Saying "keep going" never triggers a pause.
 
 ## What the loop does all night
 
@@ -98,7 +98,7 @@ The contract above drives one task to one finish condition. Some nights hold mor
 
 ## Run many projects in parallel
 
-CodeBuddy has no Cursor Project object and no cloud agents that keep running with the laptop closed. Orchestrate is a local coordinator chat plus subagents in git worktrees. Start the coordinator with `/pstack:poteto-mode`. The work stops when that session stops.
+WorkBuddy has no Cursor Project object and no cloud agents that keep running with the laptop closed. Orchestrate is a local coordinator chat plus subagents in git worktrees. Start the coordinator with `/pstack:poteto-mode`. The work stops when that session stops.
 
 A few habits help:
 

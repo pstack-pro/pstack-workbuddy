@@ -69,15 +69,9 @@ elif raw=$(gh pr list --author "@me" --state all --limit 1000 \
 fi
 [ -s "$prs" ] || echo "[]" > "$prs"
 
-# CodeBuddy does not document Cursor's slug/agent-transcripts layout.
-# Search the documented session trees. LAST_CHAT stays "-" when neither exists.
-if [ -d "$HOME/.codebuddy/projects" ]; then
-	transcripts="$HOME/.codebuddy/projects"
-elif [ -d "$HOME/.codebuddy/sessions" ]; then
-	transcripts="$HOME/.codebuddy/sessions"
-else
-	transcripts=""
-fi
+# WorkBuddy does not use Cursor's slug/agent-transcripts layout.
+# No session directory is confirmed for this script. LAST_CHAT stays "-".
+transcripts=""
 now=$(date +%s)
 
 echo "# base: $base"

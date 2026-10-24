@@ -1,8 +1,8 @@
 # Prompts worth copying
 
-> **CodeBuddy.** Read `docs/harness/codebuddy.md` (plugin root) before you follow the rest of this file.
-> Cursor compound slugs (`claude-opus-*-xhigh`, `grok-*-xhigh-fast`, `cursor-grok-*`, `composer-*`) are not CodeBuddy model ids. A bare name printed by `codebuddy --help` still has to be confirmed for this session. Read `~/.codebuddy/rules/pstack-models.md` and omit `model` when the role line is missing.
-> CodeBuddy has no Custom Mode, no `/loop` command, no Bugbot, no cursor-team-kit, and no Cursor Automations or cloud agents. `-fast` is not a CodeBuddy model suffix. Do not pass a field the Agent tool rejects.
+> **WorkBuddy.** Read `docs/harness/workbuddy.md` (plugin root) before you follow the rest of this file.
+> Cursor compound slugs (`claude-opus-*-xhigh`, `grok-*-xhigh-fast`, `cursor-grok-*`, `composer-*`) are not WorkBuddy model ids. Read `~/.workbuddy/pstack-models.md` and omit `model` when the role line is missing.
+> WorkBuddy has no Custom Mode, no `/loop` command, no Bugbot, no cursor-team-kit, and no Cursor Automations or cloud agents. `-fast` is not a model-id suffix. Do not pass a field the Agent tool rejects.
 
 
 Swap in the real paths, skills, and done checks. Informal wording works.
@@ -47,7 +47,7 @@ Swap in the real paths, skills, and done checks. Informal wording works.
 
 ## Away and back
 
-- `/pstack:poteto-mode im going to bed. <goal> in a fresh worktree off <base>. done means <checks>. keep a decision log. don't ask me before committing. keep going until done. CodeBuddy has no /loop command. if you're truly stuck after a few hours, stop and write up why.`
+- `/pstack:poteto-mode im going to bed. <goal> in a fresh worktree off <base>. done means <checks>. keep a decision log. don't ask me before committing. keep going until done. WorkBuddy has no /loop command. if you're truly stuck after a few hours, stop and write up why.`
 - `/pstack:show-me-your-work catch me up on what you did last night.` Read its Attention section first.
 - `/pstack:ketchup` catches you up on this chat since your last message and lists every call that waits on you.
 - `/pstack:poteto-mode full autopilot on this queue. each item is independent.`

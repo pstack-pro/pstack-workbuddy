@@ -1,6 +1,6 @@
 {
   "name": "pstack-workbuddy",
-  "description": "Unofficial community marketplace for the WorkBuddy / CodeBuddy port of pstack. Not affiliated with Cursor or Tencent.",
+  "description": "Unofficial community marketplace for the WorkBuddy port of pstack. Not affiliated with Cursor or Tencent.",
   "owner": {
     "name": "pstack-pro",
     "url": "https://github.com/pstack-pro/pstack-workbuddy"
@@ -9,7 +9,7 @@
     {
       "name": "pstack",
       "source": "./",
-      "description": "pstack (Lauren Tan / poteto) adapted for WorkBuddy and CodeBuddy Code.",
+      "description": "pstack (Lauren Tan / poteto) adapted for WorkBuddy.",
       "version": "0.15.32",
       "author": {
         "name": "Lauren Tan"

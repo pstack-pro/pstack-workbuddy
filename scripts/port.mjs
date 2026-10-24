@@ -40,9 +40,9 @@ function apply(text, from, to, critical = false) {
 }
 
 const NOTE = [
-	"> **CodeBuddy.** Read `docs/harness/codebuddy.md` (plugin root) before you follow the rest of this file.",
-	"> Cursor compound slugs (`claude-opus-*-xhigh`, `grok-*-xhigh-fast`, `cursor-grok-*`, `composer-*`) are not CodeBuddy model ids. A bare name printed by `codebuddy --help` still has to be confirmed for this session. Read `~/.codebuddy/rules/pstack-models.md` and omit `model` when the role line is missing.",
-	"> CodeBuddy has no Custom Mode, no `/loop` command, no Bugbot, no cursor-team-kit, and no Cursor Automations or cloud agents. `-fast` is not a CodeBuddy model suffix. Do not pass a field the Agent tool rejects.",
+	"> **WorkBuddy.** Read `docs/harness/workbuddy.md` (plugin root) before you follow the rest of this file.",
+	"> Cursor compound slugs (`claude-opus-*-xhigh`, `grok-*-xhigh-fast`, `cursor-grok-*`, `composer-*`) are not WorkBuddy model ids. Read `~/.workbuddy/pstack-models.md` and omit `model` when the role line is missing.",
+	"> WorkBuddy has no Custom Mode, no `/loop` command, no Bugbot, no cursor-team-kit, and no Cursor Automations or cloud agents. `-fast` is not a model-id suffix. Do not pass a field the Agent tool rejects.",
 	"",
 ].join("\n");
 
@@ -66,36 +66,36 @@ const SOFT = [
 ];
 
 const STICKY = `
-## Sticky mode on CodeBuddy
+## Sticky mode on WorkBuddy
 
-CodeBuddy has no Custom Mode, and it has no Option+Enter or Alt+Enter binding that pins a skill.
+WorkBuddy has no Custom Mode, and it has no Option+Enter or Alt+Enter binding that pins a skill.
 
 When this plugin is installed, \`hooks/hooks.json\` listens for \`UserPromptSubmit\`. A prompt that starts with \`/pstack:poteto-mode\` (or \`/poteto-mode\` on a manual copy) turns sticky mode on for that \`session_id\`. Every later prompt in the session gets this skill injected again until the user sends \`/pstack:poteto-mode off\` or \`exit poteto-mode\`. \`SessionStart\` repeats a short reminder when that session resumes.
 
-A copied skill folder under \`~/.codebuddy/skills/\` or \`~/.workbuddy/skills/\` does not load plugin hooks. There, the mode applies to the message that invoked it. Start the next task by invoking the skill again.
+A copied skill folder under \`~/.workbuddy/skills/\` does not load plugin hooks. There, the mode applies to the message that invoked it. Start the next task by invoking the skill again.
 
-Do not invent a Custom Mode toggle. Tell the user which install path they are on.
+Do not invent a Custom Mode toggle, and do not invent an interaction-mode plugin. Tell the user which install path they are on.
 `;
 
 // Longer and more specific strings first.
 const REPLACEMENTS = [
 	[
 		"Transcripts live at `~/.cursor/projects/<slug>/agent-transcripts/<uuid>/<uuid>.jsonl`, where `<slug>` is the workspace path with the leading slash dropped and each \"/\" turned into \"-\" (so `/Users/you/proj` becomes `Users-you-proj`). Every line is one chat message.",
-		"CodeBuddy does not document Cursor's `agent-transcripts` slug layout. Use the `transcript_path` from the session when the pstack hook injected it. Otherwise look under `~/.codebuddy/projects/`, `~/.codebuddy/sessions/`, and `~/.codebuddy/history.jsonl`, and say which path you used. Do not invent a slug scheme. Do not read another workspace's sessions.",
+		"WorkBuddy does not use Cursor's `agent-transcripts` slug layout. Use the `transcript_path` from the session when the pstack hook injected it. Do not invent a session directory. Do not read another workspace's sessions.",
 		true,
 	],
 	[
 		"~/.cursor/rules/pstack-models.mdc",
-		"~/.codebuddy/rules/pstack-models.md",
+		"~/.workbuddy/pstack-models.md",
 	],
 	["the `pstack-models.mdc` rule", "the `pstack-models.md` rule"],
 	["`pstack-models.mdc`", "`pstack-models.md`"],
 	["pstack-models.mdc", "pstack-models.md"],
-	["~/.cursor/skills/", "~/.codebuddy/skills/"],
-	["~/.cursor/plugins/", "~/.codebuddy/plugins/"],
-	["~/.cursor/projects/", "~/.codebuddy/projects/"],
-	[".cursor/skills/", ".codebuddy/skills/"],
-	[".cursor-plugin/plugin.json", ".codebuddy-plugin/plugin.json"],
+	["~/.cursor/skills/", "~/.workbuddy/skills/"],
+	["~/.cursor/plugins/", "~/.workbuddy/plugins/"],
+	["`~/.cursor/projects/*/`", "`a guessed session directory`"],
+	[".cursor/skills/", ".workbuddy/skills/"],
+	[".cursor-plugin/plugin.json", ".workbuddy-plugin/plugin.json"],
 	[
 		"since a hand-typed `myrepo-worktrees/x` misses one that lives at `.cursor/worktrees/myrepo/x`",
 		"since a hand-typed path misses one that `git worktree list` would have returned",
@@ -127,11 +127,11 @@ const REPLACEMENTS = [
 	],
 	[
 		"agent mode (readonly strips MCP)",
-		"agent mode (use general-purpose; Explore is strictly read-only and CodeBuddy does not document it keeping MCP)",
+		"agent mode (use general-purpose; Explore is strictly read-only and WorkBuddy does not document it keeping MCP)",
 	],
 	[
 		"**Do not use readonly/Ask mode.** It strips MCP access, which disables the MCP-backed investigators and the synthesizer's citation spot-checks.",
-		"**Do not use Explore when the worker needs MCP.** CodeBuddy has no Ask mode, and Explore is documented as strictly read-only. Use `general-purpose` and tell it not to edit. Investigators still shouldn't write anything.",
+		"**Do not use Explore when the worker needs MCP.** Explore is strictly read-only. WorkBuddy's ask interaction mode is also read-only, and it is not a subagent type. Use `general-purpose` and tell it not to edit. Investigators still shouldn't write anything.",
 	],
 	[
 		"Spawn one readonly judge subagent",
@@ -139,233 +139,233 @@ const REPLACEMENTS = [
 	],
 	[
 		"Use `environment: \"local\"` only when the worker needs access to something on the user's computer.",
-		"Omit `isolation` when the worker needs access to something on the user's computer. CodeBuddy has no `environment` field. `isolation: \"worktree\"` is a local git worktree, not a Cursor cloud machine.",
+		"Omit `isolation` when the worker needs access to something on the user's computer. WorkBuddy has no `environment` field. `isolation: \"worktree\"` is a local git worktree, not a Cursor cloud machine.",
 		true,
 	],
 	['`environment: "cloud"`', '`isolation: "worktree"`'],
 	[
 		"When a worker must start from a non-default pushed branch, pass `cloud_base_branch`.",
-		"When a worker must start from a non-default pushed branch, tell it to check out that branch. CodeBuddy has no `cloud_base_branch` parameter.",
+		"When a worker must start from a non-default pushed branch, tell it to check out that branch. WorkBuddy has no `cloud_base_branch` parameter.",
 		true,
 	],
 	[
 		"Resume, message, or queue a follow-up on an existing subagent only when the new work strictly needs state that lives in that agent and is costly to move: its local checkout, its uncommitted changes, or a process it still runs, such as a dev server, a simulator, or a babysit watcher.",
-		"CodeBuddy does not document a resume, message, or queue parameter on the Agent tool. Do not invent one. Spawn a fresh subagent and paste the prior report and branch. When the work needs a live process (a dev server, a simulator, a watcher) or uncommitted files in a checkout you cannot see, say that reattach is unavailable and continue from the files on disk.",
+		"WorkBuddy does not document a resume, message, or queue parameter on the Agent tool. Do not invent one. Spawn a fresh subagent and paste the prior report and branch. When the work needs a live process (a dev server, a simulator, a watcher) or uncommitted files in a checkout you cannot see, say that reattach is unavailable and continue from the files on disk.",
 		true,
 	],
 	[
 		"Cursor's built-in `create-skill` skill",
-		"the **authoring-a-skill** playbook (CodeBuddy has no built-in `create-skill`)",
+		"the **authoring-a-skill** playbook (WorkBuddy has no built-in `create-skill`)",
 	],
 	[
 		"Cursor's built-in `create-skill`",
-		"the **authoring-a-skill** playbook (CodeBuddy has no built-in `create-skill`)",
+		"the **authoring-a-skill** playbook (WorkBuddy has no built-in `create-skill`)",
 	],
 	[
 		"Use Cursor's built-in `create-skill` skill to author the skill.",
-		"Follow the **authoring-a-skill** playbook to author the skill. CodeBuddy has no built-in `create-skill`.",
+		"Follow the **authoring-a-skill** playbook to author the skill. WorkBuddy has no built-in `create-skill`.",
 	],
 	[
 		"through Cursor's built-in `create-skill` flow",
-		"through the **authoring-a-skill** playbook (CodeBuddy has no built-in `create-skill`)",
+		"through the **authoring-a-skill** playbook (WorkBuddy has no built-in `create-skill`)",
 	],
 	[
 		"which routes through Cursor's built-in `create-skill`",
-		"which routes through the **authoring-a-skill** playbook (CodeBuddy has no built-in `create-skill`)",
+		"which routes through the **authoring-a-skill** playbook (WorkBuddy has no built-in `create-skill`)",
 	],
 	[
 		"1. Use the **create-skill** skill (Cursor's built-in for authoring SKILL.md files).",
-		"1. Use the **authoring-a-skill** playbook. CodeBuddy has no built-in `create-skill`.",
+		"1. Use the **authoring-a-skill** playbook. WorkBuddy has no built-in `create-skill`.",
 		true,
 	],
 	[
 		"Agent-facing prose also follows the **create-skill** skill (Cursor's built-in for authoring SKILL.md files).",
-		"Agent-facing prose also follows the **authoring-a-skill** playbook. CodeBuddy has no built-in `create-skill`.",
+		"Agent-facing prose also follows the **authoring-a-skill** playbook. WorkBuddy has no built-in `create-skill`.",
 		true,
 	],
 	[
 		"hand to Cursor's built-in `create-skill` skill and run its draft / test / iterate loop.",
-		"follow the **authoring-a-skill** playbook (CodeBuddy has no built-in `create-skill`).",
+		"follow the **authoring-a-skill** playbook (WorkBuddy has no built-in `create-skill`).",
 	],
 	[
 		"using Cursor's `/loop` command (a built-in, not a pstack skill). An event to watch (CI, a merge, a ref advancing) gets a watcher subagent that wakes you on the event, with a long time-based heartbeat as fallback. No event gets a fixed-interval heartbeat sized to when the result is worth re-checking.",
-		"using a finish-condition loop. CodeBuddy has no `/loop` command. `CronCreate` can schedule a later check, but it is not `/loop`. An event to watch (CI, a merge, a ref advancing) gets a watcher subagent that wakes you on the event, with a long time-based heartbeat as fallback. No event gets a fixed-interval heartbeat sized to when the result is worth re-checking.",
+		"using a finish-condition loop. WorkBuddy has no `/loop` command. `CronCreate` can schedule a later check, but it is not `/loop`. An event to watch (CI, a merge, a ref advancing) gets a watcher subagent that wakes you on the event, with a long time-based heartbeat as fallback. No event gets a fixed-interval heartbeat sized to when the result is worth re-checking.",
 		true,
 	],
 	[
 		"Drive a long or stubborn hunt with Cursor's `/loop` command.",
-		"Drive a long or stubborn hunt by repeating the check (CodeBuddy has no `/loop` command).",
+		"Drive a long or stubborn hunt by repeating the check (WorkBuddy has no `/loop` command).",
 		true,
 	],
 	[
 		"not Cursor's built-in babysit skill, whose description matches the same words.",
-		"not a host babysit skill (CodeBuddy has no built-in babysit skill).",
+		"not a host babysit skill (WorkBuddy has no built-in babysit skill).",
 		true,
 	],
 	[
 		"This playbook replaces Cursor's built-in babysit skill for these requests, so do not route there even though its description matches the same words.",
-		"This playbook is the babysit flow. CodeBuddy has no built-in babysit skill, so do not look for a host skill with the same description.",
+		"This playbook is the babysit flow. WorkBuddy has no built-in babysit skill, so do not look for a host skill with the same description.",
 		true,
 	],
 	[
 		"Each owner is a Cursor cloud agent that builds,",
-		"Each owner is an Agent subagent with `isolation: \"worktree\"` (CodeBuddy has no Cursor cloud agents) that builds,",
+		"Each owner is an Agent subagent with `isolation: \"worktree\"` (WorkBuddy has no Cursor cloud agents) that builds,",
 		true,
 	],
 	[
 		"each a Cursor cloud agent,",
-		"each an Agent subagent with `isolation: \"worktree\"` (CodeBuddy has no Cursor cloud agents),",
+		"each an Agent subagent with `isolation: \"worktree\"` (WorkBuddy has no Cursor cloud agents),",
 		true,
 	],
 	[
 		"the cloud agent's status in the Cursor dashboard",
-		"the worker's PR and branch (CodeBuddy has no Cursor cloud-agent dashboard)",
+		"the worker's PR and branch (WorkBuddy has no Cursor cloud-agent dashboard)",
 		true,
 	],
 	[
 		"After a Cursor restart: local agents are dead, cloud work is not. Re-read the standing orders and `units.tsv`, recompute the frontier, reattach cloud work by PR and branch rather than agent id, respawn one sub-coordinator per track from its stored brief plus current state, drain, resume.",
-		"After a WorkBuddy or CodeBuddy restart: in-process agents are dead. CodeBuddy has no Cursor cloud agents. Re-read the standing orders and `units.tsv`, recompute the frontier, reattach work by PR and branch rather than agent id, respawn one sub-coordinator per track from its stored brief plus current state, drain.",
+		"After a WorkBuddy restart: in-process agents are dead. WorkBuddy has no Cursor cloud agents. Re-read the standing orders and `units.tsv`, recompute the frontier, reattach work by PR and branch rather than agent id, respawn one sub-coordinator per track from its stored brief plus current state, drain.",
 		true,
 	],
-	["a Cursor restart", "a WorkBuddy or CodeBuddy restart"],
-	["restart Cursor", "restart WorkBuddy or CodeBuddy"],
+	["a Cursor restart", "a WorkBuddy restart"],
+	["restart Cursor", "restart WorkBuddy"],
 	[
 		"Before spawning investigators, list the available MCPs from the Cursor environment. Use the available-tools map when present. Otherwise inspect the `mcps/` directory Cursor exposes for enabled MCP servers.",
-		"Before spawning investigators, list the MCP servers this CodeBuddy session exposes. CodeBuddy does not document a Cursor-style `mcps/` directory. Skip a source whose server is absent and say so.",
+		"Before spawning investigators, list the MCP servers this WorkBuddy session exposes. WorkBuddy does not document a Cursor-style `mcps/` directory. Skip a source whose server is absent and say so.",
 		true,
 	],
 	[
 		"Before commit → the `deslop` skill from the `cursor-team-kit` plugin (`/deslop`).",
-		"Before commit → CodeBuddy has no cursor-team-kit and no `/deslop`. Review the diff for narrating comments, unsupported guards, and dead compatibility paths, then run the **no-comments** skill.",
+		"Before commit → WorkBuddy has no cursor-team-kit and no `/deslop`. Review the diff for narrating comments, unsupported guards, and dead compatibility paths, then run the **no-comments** skill.",
 		true,
 	],
 	[
 		"runs `/deslop` on the diff before each commit",
-		"reviews the diff for slop before each commit (CodeBuddy has no `/deslop`)",
+		"reviews the diff for slop before each commit (WorkBuddy has no `/deslop`)",
 	],
 	[
 		"`cursor-team-kit` plugin",
-		"`cursor-team-kit` plugin, which CodeBuddy does not provide",
+		"`cursor-team-kit` plugin, which WorkBuddy does not provide",
 	],
 	[
 		"(such as `control-ui` or `control-cli` from `cursor-team-kit`)",
-		"(CodeBuddy has no cursor-team-kit `control-ui` or `control-cli`; use a project `verify-*` skill when one exists)",
+		"(WorkBuddy has no cursor-team-kit `control-ui` or `control-cli`; use a project `verify-*` skill when one exists)",
 	],
 	[
 		"Open a todolist",
-		"Open a checklist with `TaskCreate` (CodeBuddy has no todolist tool; if `TaskCreate` is absent, keep the list in the reply)",
+		"Open a checklist with `TaskCreate` (WorkBuddy has no todolist tool; if `TaskCreate` is absent, keep the list in the reply)",
 	],
 	[
 		"tool call (Shell, Grep, MCP, etc.)",
 		"tool call (Bash, Grep, MCP, etc.)",
 	],
-	["agent-transcripts/", "session transcripts (CodeBuddy does not document an agent-transcripts directory) /"],
+	["agent-transcripts/", "session transcripts (WorkBuddy does not document an agent-transcripts directory) /"],
 	[
 		"mention once that a Custom Mode keeps it on.",
-		"mention once that the plugin hook keeps `/pstack:poteto-mode` on for the rest of the session until `/pstack:poteto-mode off`. CodeBuddy has no Custom Mode.",
+		"mention once that the plugin hook keeps `/pstack:poteto-mode` on for the rest of the session until `/pstack:poteto-mode off`. WorkBuddy has no Custom Mode.",
 		true,
 	],
 	[
 		"1. Install with `/add-plugin pstack` in chat, or from Customize in the sidebar.",
-		"1. Install with `/plugin marketplace add pstack-pro/pstack-workbuddy`, then `/plugin install pstack@pstack-workbuddy`. Or copy `skills/` into `~/.codebuddy/skills/` (WorkBuddy desktop also reads `~/.workbuddy/skills/`). CodeBuddy has no `/add-plugin` command.",
+		"1. Install with `/plugin marketplace add pstack-pro/pstack-workbuddy`, then `/plugin install pstack@pstack-workbuddy`. Or copy `skills/` into `~/.workbuddy/skills/`. WorkBuddy has no `/add-plugin` command.",
 		true,
 	],
 	[
 		"pstack is built for Cursor, and it also installs in Claude Code with `/plugin marketplace add cursor/plugins`, then `/plugin install pstack@cursor-plugins`. There, each command takes a `pstack:` prefix, such as `/pstack:poteto-mode`. The [Claude Code adapter](../../docs/harness/claude-code.md) maps the Cursor names, and a step that needs a Cursor-only feature, such as Bugbot or Automations, is skipped with a one-line note.",
-		"This copy is the WorkBuddy / CodeBuddy port. Plugin commands take a `pstack:` prefix, such as `/pstack:poteto-mode`. The [CodeBuddy adapter](../../docs/harness/codebuddy.md) maps what is left. A step that needs Bugbot or Cursor Automations is skipped with a one-line note. CodeBuddy has no Bugbot and no Cursor Automations.",
+		"This copy is the WorkBuddy port. Plugin commands take a `pstack:` prefix, such as `/pstack:poteto-mode`. The [WorkBuddy adapter](../../docs/harness/workbuddy.md) maps what is left. A step that needs Bugbot or Cursor Automations is skipped with a one-line note. WorkBuddy has no Bugbot and no Cursor Automations.",
 		true,
 	],
 	[
 		"Other tools can read the skills, because they use the Agent Skills format. But most workflow skills, including `/poteto-mode`, `/how`, `/why`, and `/teach`, spawn Cursor subagents with per-role models, and Custom Modes and `/loop` are Cursor features, so those parts may not work there.",
-		"Manual copies of the skill folders still load, because they use the Agent Skills format. Workflow skills spawn CodeBuddy `Agent` subagents. CodeBuddy has no Custom Mode and no `/loop` command. The plugin hook is what keeps `/pstack:poteto-mode` on. See the adapter.",
+		"Manual copies of the skill folders still load, because they use the Agent Skills format. Workflow skills spawn WorkBuddy `Agent` subagents. WorkBuddy has no Custom Mode and no `/loop` command. The plugin hook is what keeps `/pstack:poteto-mode` on. See the adapter.",
 		true,
 	],
 	[
 		"- Enter on `/poteto-mode` attaches the skill to one message. It fades as the chat moves on.\n- Option+Enter on Mac or Alt+Enter on Windows, or Use as Mode from the skill entry, makes it a Custom Mode. It stays in context every turn until the user exits the mode, and it stays out of casual turns.\n- Cursor's docs list Custom Modes in the Agents Window and the CLI. Elsewhere, start each new task with `/poteto-mode`.",
-		"- Invoking the skill attaches it to that message.\n- With the plugin installed, a prompt that starts with `/pstack:poteto-mode` stays on for the session until `/pstack:poteto-mode off`. CodeBuddy has no Custom Mode.\n- A manual copy has no hook. Start each new task by invoking the skill again.",
+		"- Invoking the skill attaches it to that message.\n- With the plugin installed, a prompt that starts with `/pstack:poteto-mode` stays on for the session until `/pstack:poteto-mode off`. WorkBuddy has no Custom Mode.\n- A manual copy has no hook. Start each new task by invoking the skill again.",
 		true,
 	],
 	[
 		"Link [Cursor's skills docs](https://cursor.com/docs/skills) when this comes up.",
-		"Point at `docs/harness/codebuddy.md` when this comes up. CodeBuddy has no Custom Mode.",
+		"Point at `docs/harness/workbuddy.md` when this comes up. WorkBuddy has no Custom Mode.",
 		true,
 	],
 	[
 		"- `/loop` and `/create-skill` are Cursor built-ins.",
-		"- CodeBuddy has no `/loop` command and no built-in `create-skill`. Use the Autonomous run playbook and the authoring-a-skill playbook.",
+		"- WorkBuddy has no `/loop` command and no built-in `create-skill`. Use the Autonomous run playbook and the authoring-a-skill playbook.",
 		true,
 	],
 	[
 		"Without `/poteto-mode`, a phrase such as \"babysit this pr\" can start Cursor's own skill for the same job instead.",
-		"CodeBuddy has no built-in babysit skill. The Babysit playbook is the flow.",
+		"WorkBuddy has no built-in babysit skill. The Babysit playbook is the flow.",
 		true,
 	],
 	[
 		"pstack has no planning skill. Cursor's Plan Mode works alongside it.",
-		"pstack has no planning skill. CodeBuddy plan mode is `EnterPlanMode` / `ExitPlanMode`. CodeBuddy has no separate Cursor Plan Mode product.",
+		"pstack has no planning skill. WorkBuddy's plan behavior is its built-in plan interaction mode. This plugin does not switch that mode. There is no separate Cursor Plan Mode product.",
 		true,
 	],
 	[
 		"| The mode stopped applying after a few turns | It was started with Enter. Start it as a Custom Mode, or start each task with `/poteto-mode`. |",
-		"| The mode stopped applying after a few turns | The plugin hook is off, or this was a manual copy. Start the next task with `/pstack:poteto-mode`, or send that command at the start of a prompt. CodeBuddy has no Custom Mode. |",
+		"| The mode stopped applying after a few turns | The plugin hook is off, or this was a manual copy. Start the next task with `/pstack:poteto-mode`, or send that command at the start of a prompt. WorkBuddy has no Custom Mode. |",
 		true,
 	],
 	[
 		"| Parallel agents overwrote each other | Give each agent its own worktree, or run them as cloud agents, which each get their own machine. |",
-		"| Parallel agents overwrote each other | Give each agent its own worktree (`isolation: \"worktree\"` or `EnterWorktree`). CodeBuddy has no Cursor cloud agents. |",
+		"| Parallel agents overwrote each other | Give each agent its own worktree (`isolation: \"worktree\"` or `EnterWorktree`). WorkBuddy has no Cursor cloud agents. |",
 		true,
 	],
 	[
 		"| An overnight run moved but finished nothing | `/loop` needs a check that can pass or fail, not a duration. See [guide page 7](../../docs/guide/07-overnight.md). |",
-		"| An overnight run moved but finished nothing | CodeBuddy has no `/loop` command. The finish condition still has to pass or fail, not be a duration. See [guide page 7](../../docs/guide/07-overnight.md). |",
+		"| An overnight run moved but finished nothing | WorkBuddy has no `/loop` command. The finish condition still has to pass or fail, not be a duration. See [guide page 7](../../docs/guide/07-overnight.md). |",
 		true,
 	],
 	[
 		"or run them as cloud agents",
-		"or give each one `isolation: \"worktree\"` (CodeBuddy has no Cursor cloud agents)",
+		"or give each one `isolation: \"worktree\"` (WorkBuddy has no Cursor cloud agents)",
 	],
 	[
 		"https://github.com/cursor/plugins/blob/main/pstack/",
 		"https://github.com/pstack-pro/pstack-workbuddy/blob/main/",
 	],
-	["[Claude Code adapter](../harness/claude-code.md)", "[CodeBuddy adapter](../harness/codebuddy.md)"],
-	["[Claude Code adapter](../../docs/harness/claude-code.md)", "[CodeBuddy adapter](../../docs/harness/codebuddy.md)"],
+	["[Claude Code adapter](../harness/claude-code.md)", "[WorkBuddy adapter](../harness/workbuddy.md)"],
+	["[Claude Code adapter](../../docs/harness/claude-code.md)", "[WorkBuddy adapter](../../docs/harness/workbuddy.md)"],
 ];
 
 const GUIDE_INSTALL_START = "## Install the plugin\n\n";
 const GUIDE_INSTALL_END = "## Pick your models";
 const GUIDE_INSTALL = `## Install the plugin
 
-This guide is the WorkBuddy / CodeBuddy port. Plugin commands use the \`/pstack:\` prefix. CodeBuddy has no \`/add-plugin\` command.
+This guide is the WorkBuddy port. Plugin commands use the \`/pstack:\` prefix. WorkBuddy has no \`/add-plugin\` command.
 
 \`\`\`text
 /plugin marketplace add pstack-pro/pstack-workbuddy
 /plugin install pstack@pstack-workbuddy
 \`\`\`
 
-A manual copy of \`skills/\` into \`~/.codebuddy/skills/\` or \`~/.workbuddy/skills/\` also loads. Those copies have no \`pstack:\` prefix and no sticky-mode hook. The [CodeBuddy adapter](../harness/codebuddy.md) covers the other differences. \`/pstack:setup-pstack\` writes \`~/.codebuddy/rules/pstack-models.md\`.
+A manual copy of \`skills/\` into \`~/.workbuddy/skills/\` also loads. That copy has no \`pstack:\` prefix and no sticky-mode hook. The [WorkBuddy adapter](../harness/workbuddy.md) covers the other differences. \`/pstack:setup-pstack\` writes \`~/.workbuddy/pstack-models.md\`. The session hook injects that file. WorkBuddy does not auto-load a rules directory for it.
 
 `;
 
 const CUSTOM_MODE_PARAGRAPH =
 	"From here you can type normal follow-ups. To keep `/poteto-mode` on for the whole chat, pick it from the `/` menu with Option+Enter (Mac) or Alt+Enter (Windows) instead of Enter. That makes it a [Custom Mode](https://cursor.com/docs/skills#using-a-skill-as-a-custom-mode), which stays in context on every turn until you exit it. Custom Modes are available in the Agents Window and the CLI. Plain Enter attaches the skill to one message, and it fades as the chat moves on.";
 const CUSTOM_MODE_REPLACEMENT =
-	"From here you can type normal follow-ups. CodeBuddy has no Custom Mode. With the plugin installed, a later prompt stays in poteto-mode until you send `/pstack:poteto-mode off`. A manual skill copy applies the skill to one message. Invoke it again on the next task.";
+	"From here you can type normal follow-ups. WorkBuddy has no Custom Mode. With the plugin installed, a later prompt stays in poteto-mode until you send `/pstack:poteto-mode off`. A manual skill copy applies the skill to one message. Invoke it again on the next task.";
 
 const SHORT_CUSTOM =
 	"Short works because the playbook holds the structure, and a Custom Mode keeps `/poteto-mode` in context on every turn.";
 const SHORT_CUSTOM_REPLACEMENT =
-	"Short works because the playbook holds the structure, and the plugin hook keeps `/pstack:poteto-mode` in context on every turn. CodeBuddy has no Custom Mode.";
+	"Short works because the playbook holds the structure, and the plugin hook keeps `/pstack:poteto-mode` in context on every turn. WorkBuddy has no Custom Mode.";
 
 const LOOP_BULLET =
 	"- `/loop` is Cursor's built-in wake mechanism, not a pstack skill. The [Autonomous run playbook](../../skills/poteto-mode/playbooks/autonomous-run.md) uses it to re-check the finish condition on events or a heartbeat.";
 const LOOP_BULLET_REPLACEMENT =
-	"- CodeBuddy has no `/loop` command. The [Autonomous run playbook](../../skills/poteto-mode/playbooks/autonomous-run.md) re-checks the finish condition. `CronCreate` can schedule a later check. It is not `/loop`.";
+	"- WorkBuddy has no `/loop` command. The [Autonomous run playbook](../../skills/poteto-mode/playbooks/autonomous-run.md) re-checks the finish condition. `CronCreate` can schedule a later check. It is not `/loop`.";
 
 const PROJECTS_PARAGRAPH =
 	"A [Cursor Project](https://cursor.com/blog/projects) gives one coordinator agent a persistent thread. The coordinator doesn't write code. It directs subagents, which run in the cloud by default, so the work continues when your laptop is closed. That's the shape the Orchestrate playbook expects. Start your prompts to the coordinator with `/poteto-mode`, and the subagents it spawns follow the playbooks.";
 const PROJECTS_REPLACEMENT =
-	"CodeBuddy has no Cursor Project object and no cloud agents that keep running with the laptop closed. Orchestrate is a local coordinator chat plus subagents in git worktrees. Start the coordinator with `/pstack:poteto-mode`. The work stops when that session stops.";
+	"WorkBuddy has no Cursor Project object and no cloud agents that keep running with the laptop closed. Orchestrate is a local coordinator chat plus subagents in git worktrees. Start the coordinator with `/pstack:poteto-mode`. The work stops when that session stops.";
 
 function transform(text) {
 	let out = text;
@@ -385,7 +385,7 @@ function transform(text) {
 	out = apply(
 		out,
 		"/loop until done. if you're truly stuck after a few hours, stop and write up why.",
-		"keep going until done. CodeBuddy has no /loop command. if you're truly stuck after a few hours, stop and write up why.",
+		"keep going until done. WorkBuddy has no /loop command. if you're truly stuck after a few hours, stop and write up why.",
 	);
 	return out;
 }
@@ -434,7 +434,7 @@ function agentFrontmatter(lines) {
 }
 
 function injectNote(text) {
-	if (text.includes("**CodeBuddy.**")) return text;
+	if (text.includes("**WorkBuddy.**")) return text;
 	if (!SOFT.some((re) => re.test(text))) return text;
 	const heading = text.match(/^---\r?\n[\s\S]*?\r?\n---\r?\n[\s\S]*?^# .+$/m);
 	if (heading) {
@@ -473,15 +473,9 @@ copyTree(path.join(src, "docs", "guide"), path.join(root, "docs", "guide"));
 const SH_FROM = `# Transcripts dir: ~/.cursor/projects/<slugified-repo-path>/agent-transcripts.
 slug=$(printf '%s' "$main_wt" | sed 's#^/##; s#/#-#g')
 transcripts="$HOME/.cursor/projects/$slug/agent-transcripts"`;
-const SH_TO = `# CodeBuddy does not document Cursor's slug/agent-transcripts layout.
-# Search the documented session trees. LAST_CHAT stays "-" when neither exists.
-if [ -d "$HOME/.codebuddy/projects" ]; then
-	transcripts="$HOME/.codebuddy/projects"
-elif [ -d "$HOME/.codebuddy/sessions" ]; then
-	transcripts="$HOME/.codebuddy/sessions"
-else
-	transcripts=""
-fi`;
+const SH_TO = `# WorkBuddy does not use Cursor's slug/agent-transcripts layout.
+# No session directory is confirmed for this script. LAST_CHAT stays "-".
+transcripts=""`;
 
 for (const dir of ["skills", "agents", "docs/guide"]) {
 	walk(path.join(root, dir), (file) => {
@@ -499,7 +493,7 @@ for (const dir of ["skills", "agents", "docs/guide"]) {
 				if (edited.stripped.some((line) => line.startsWith("paths:"))) {
 					text = text.replace(
 						/^(# .+\n)/m,
-						"$1\nCodeBuddy skill frontmatter has no `paths` field. Apply this skill when you read or edit `.ts` or `.tsx` files.\n",
+						"$1\nWorkBuddy skill frontmatter has no `paths` field. Apply this skill when you read or edit `.ts` or `.tsx` files.\n",
 					);
 				}
 			}
@@ -513,7 +507,7 @@ for (const dir of ["skills", "agents", "docs/guide"]) {
 			const text = fs.readFileSync(file, "utf8");
 			const next = text.includes(SH_FROM) ? text.replace(SH_FROM, SH_TO) : text;
 			if (file.endsWith("worktree-audit.sh")) {
-				criticalHits.set("worktree-audit.sh transcripts", next.includes(".codebuddy/projects") ? 1 : 0);
+				criticalHits.set("worktree-audit.sh transcripts", next.includes("transcripts=\"\"") ? 1 : 0);
 			}
 			fs.writeFileSync(file, next);
 		}
@@ -558,13 +552,13 @@ function bump(file) {
 	}
 	fs.writeFileSync(file, `${JSON.stringify(json, null, 2)}\n`);
 }
-bump(path.join(root, ".codebuddy-plugin", "plugin.json"));
-bump(path.join(root, ".codebuddy-plugin", "marketplace.json"));
+bump(path.join(root, ".workbuddy-plugin", "plugin.json"));
+bump(path.join(root, ".workbuddy-plugin", "marketplace.json"));
 
 const HARD = [
 	[/(?<![\w])AskQuestion\b/, "AskQuestion"],
 	[/generalPurpose/, "generalPurpose"],
-	[/(?<!codebuddy)\.cursor\//, ".cursor/"],
+	[/(?<![\w.])\.cursor\//, ".cursor/"],
 	[/pstack-models\.mdc/, "pstack-models.mdc"],
 	[/\/add-plugin\b/, "/add-plugin"],
 	[/is_background/, "is_background"],

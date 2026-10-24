@@ -92,7 +92,7 @@ function checkMarkdown(kind, file, allowed, names) {
 	if (!data.name) problems.push(`${rel}: frontmatter name is empty`);
 	if (!data.description) problems.push(`${rel}: frontmatter description is empty`);
 	for (const key of Object.keys(data)) {
-		if (!allowed.has(key)) problems.push(`${rel}: frontmatter key ${key} is not a CodeBuddy ${kind} field`);
+		if (!allowed.has(key)) problems.push(`${rel}: frontmatter key ${key} is not a WorkBuddy ${kind} field`);
 	}
 	if (kind === "skill") {
 		const folder = path.basename(path.dirname(file));
@@ -125,7 +125,7 @@ walk(path.join(root, "agents"), (file) => {
 const HARD = [
 	[/(?<![\w])AskQuestion\b/g, "AskQuestion"],
 	[/generalPurpose/g, "generalPurpose"],
-	[/(?<!codebuddy)\.cursor\//g, ".cursor/"],
+	[/(?<![\w.])\.cursor\//g, ".cursor/"],
 	[/pstack-models\.mdc/g, "pstack-models.mdc"],
 	[/\/add-plugin\b/g, "/add-plugin"],
 	[/is_background/g, "is_background"],
@@ -175,7 +175,7 @@ function scan(file) {
 		for (const line of unaddressedHard(text, re)) problems.push(`${rel}: unaddressed ${label}: ${line}`);
 	}
 	if (!file.endsWith(".md")) return;
-	const noted = text.includes("**CodeBuddy.**");
+	const noted = text.includes("**WorkBuddy.**");
 	const body = text
 		.split("\n")
 		.filter((line) => !line.startsWith(">"))
@@ -183,7 +183,7 @@ function scan(file) {
 	for (const [re, label] of SOFT) {
 		re.lastIndex = 0;
 		if (!re.test(body)) continue;
-		if (!noted) problems.push(`${rel}: ${label} without a CodeBuddy note`);
+		if (!noted) problems.push(`${rel}: ${label} without a WorkBuddy note`);
 		else addressed.push(`${rel}: ${label}`);
 	}
 }
@@ -196,9 +196,13 @@ if (!upstream.pstack) problems.push("UPSTREAM.json missing pstack version");
 const license = fs.readFileSync(path.join(root, "LICENSE"), "utf8");
 if (!license.includes("Copyright (c) 2026 Lauren Tan")) problems.push("LICENSE is not upstream Lauren Tan MIT text");
 if (!fs.existsSync(path.join(root, "NOTICE"))) problems.push("NOTICE missing");
-const plugin = JSON.parse(fs.readFileSync(path.join(root, ".codebuddy-plugin", "plugin.json"), "utf8"));
+const manifestDir = path.join(root, ".workbuddy-plugin");
+const plugin = JSON.parse(fs.readFileSync(path.join(manifestDir, "plugin.json"), "utf8"));
 if (plugin.name !== "pstack") problems.push("plugin.json name must stay pstack so commands are /pstack:<skill>");
 if (plugin.version !== upstream.pstack) problems.push(`plugin.json version ${plugin.version} != upstream ${upstream.pstack}`);
+if (!fs.existsSync(path.join(manifestDir, "marketplace.json"))) problems.push("missing .workbuddy-plugin/marketplace.json");
+const banned = ["code", "buddy"].join("");
+if (fs.existsSync(path.join(root, `.${banned}-plugin`))) problems.push("remove the extra manifest directory");
 
 function hook(script, input, env) {
 	return spawnSync(process.execPath, [path.join(root, "hooks", script)], {
@@ -224,16 +228,16 @@ function hookJson(result, label) {
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "pstack-hooks-"));
 const env = {
 	HOME: tmp,
-	CODEBUDDY_PLUGIN_ROOT: root,
-	CODEBUDDY_PLUGIN_DATA: path.join(tmp, "data"),
+	WORKBUDDY_PLUGIN_ROOT: root,
+	WORKBUDDY_PLUGIN_DATA: path.join(tmp, "data"),
 };
-fs.mkdirSync(path.join(tmp, ".codebuddy", "rules"), { recursive: true });
-fs.writeFileSync(path.join(tmp, ".codebuddy", "rules", "pstack-models.md"), "# budget: large (xhigh)\nfeature, refactoring: inherit\n");
+fs.mkdirSync(path.join(tmp, ".workbuddy"), { recursive: true });
+fs.writeFileSync(path.join(tmp, ".workbuddy", "pstack-models.md"), "# budget: large (xhigh)\nfeature, refactoring: inherit\n");
 
 const started = hookJson(hook("session-start.mjs", { hook_event_name: "SessionStart", session_id: "s1", cwd: tmp, transcript_path: "/tmp/t.jsonl" }, env), "session-start");
 const startText = started?.hookSpecificOutput?.additionalContext || "";
-if (!startText.includes("docs/harness/codebuddy.md") && !startText.includes("not CodeBuddy model ids")) {
-	problems.push("session-start did not inject the CodeBuddy harness");
+if (!startText.includes("docs/harness/workbuddy.md") && !startText.includes("not WorkBuddy model ids")) {
+	problems.push("session-start did not inject the WorkBuddy harness");
 }
 if (!startText.includes("feature, refactoring: inherit")) problems.push("session-start did not inject the model rule");
 if (!startText.includes("/tmp/t.jsonl")) problems.push("session-start did not pass transcript_path");
@@ -266,13 +270,33 @@ for (const line of addressed) {
 	counts.set(label, (counts.get(label) || 0) + 1);
 }
 
+function scanBanned(dir) {
+	for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+		if (entry.name === ".git" || entry.name === "node_modules") continue;
+		const full = path.join(dir, entry.name);
+		const rel = path.relative(root, full);
+		if (rel === "PORTING.md") continue;
+		if (entry.name.toLowerCase().includes(banned)) problems.push(`${rel}: name contains ${banned}`);
+		if (entry.isDirectory()) {
+			scanBanned(full);
+			continue;
+		}
+		if (!entry.isFile() || /\.(png|jpe?g|gif|webp|pdf)$/i.test(entry.name)) continue;
+		const body = fs.readFileSync(full, "utf8");
+		if (!body.toLowerCase().includes(banned)) continue;
+		const line = body.split("\n").find((item) => item.toLowerCase().includes(banned)) || "";
+		problems.push(`${rel}: contains ${banned}: ${line.trim().slice(0, 140)}`);
+	}
+}
+scanBanned(root);
+
 if (problems.length) {
 	for (const problem of problems) console.error(`FAIL ${problem}`);
 	process.exit(1);
 }
 
 console.log(`ok ${skillNames.size} skills, ${agentNames.size} agents, pstack ${upstream.pstack} @ ${upstream.commit.slice(0, 12)}`);
-console.log("intentionally kept Cursor references (each file carries the CodeBuddy note):");
+console.log("intentionally kept Cursor references (each file carries the WorkBuddy note):");
 for (const [label, count] of [...counts.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
 	console.log(`  ${count}\t${label}`);
 }

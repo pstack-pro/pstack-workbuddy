@@ -10,7 +10,7 @@ When the task matches no playbook, design one. The deliverable before any code i
 
 ## Start
 
-Open a checklist with `TaskCreate` (CodeBuddy has no todolist tool; if `TaskCreate` is absent, keep the list in the reply) whose first item is to read the Principles section of the **poteto-mode** skill. Then add the phases below as todos.
+Open a checklist with `TaskCreate` (WorkBuddy has no todolist tool; if `TaskCreate` is absent, keep the list in the reply) whose first item is to read the Principles section of the **poteto-mode** skill. Then add the phases below as todos.
 
 ## Phase A: Frame
 

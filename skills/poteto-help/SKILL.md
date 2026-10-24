@@ -6,14 +6,14 @@ disable-model-invocation: true
 
 # Poteto help
 
-> **CodeBuddy.** Read `docs/harness/codebuddy.md` (plugin root) before you follow the rest of this file.
-> Cursor compound slugs (`claude-opus-*-xhigh`, `grok-*-xhigh-fast`, `cursor-grok-*`, `composer-*`) are not CodeBuddy model ids. A bare name printed by `codebuddy --help` still has to be confirmed for this session. Read `~/.codebuddy/rules/pstack-models.md` and omit `model` when the role line is missing.
-> CodeBuddy has no Custom Mode, no `/loop` command, no Bugbot, no cursor-team-kit, and no Cursor Automations or cloud agents. `-fast` is not a CodeBuddy model suffix. Do not pass a field the Agent tool rejects.
+> **WorkBuddy.** Read `docs/harness/workbuddy.md` (plugin root) before you follow the rest of this file.
+> Cursor compound slugs (`claude-opus-*-xhigh`, `grok-*-xhigh-fast`, `cursor-grok-*`, `composer-*`) are not WorkBuddy model ids. Read `~/.workbuddy/pstack-models.md` and omit `model` when the role line is missing.
+> WorkBuddy has no Custom Mode, no `/loop` command, no Bugbot, no cursor-team-kit, and no Cursor Automations or cloud agents. `-fast` is not a model-id suffix. Do not pass a field the Agent tool rejects.
 
 
 Answer the user's question about pstack, hand them a prompt they can send, and link the file the answer came from. For a help question, don't start the work. The user asked how, and a pstack run spends real tokens, so let them send the prompt.
 
-A message that asks for work, such as "use pstack to fix this bug", is not a help question. Read [`poteto-mode`](../poteto-mode/SKILL.md), do the work under it, and mention once that the plugin hook keeps `/pstack:poteto-mode` on for the rest of the session until `/pstack:poteto-mode off`. CodeBuddy has no Custom Mode.
+A message that asks for work, such as "use pstack to fix this bug", is not a help question. Read [`poteto-mode`](../poteto-mode/SKILL.md), do the work under it, and mention once that the plugin hook keeps `/pstack:poteto-mode` on for the rest of the session until `/pstack:poteto-mode off`. WorkBuddy has no Custom Mode.
 
 This file maps questions to the skills and guide pages that hold the answers. Those files own the details. Read the file you route to before you quote it, and trust it when it disagrees with this map. The links here point into the installed plugin, which the user may not be able to open, so give the user the file's public copy: `https://github.com/pstack-pro/pstack-workbuddy/blob/main/` followed by its path.
 
@@ -29,7 +29,7 @@ Infer the need from the message and the conversation. A named situation, such as
 
 Check the state that changes the answer, and mention it only when it does:
 
-- No `~/.codebuddy/rules/pstack-models.md` means `/pstack:setup-pstack` hasn't run for this user, so every role uses its default model.
+- No `~/.workbuddy/pstack-models.md` means `/pstack:setup-pstack` hasn't run for this user, so every role uses its default model.
 - No `verify-*` skill or other app harness in the project means agents have no scripted way to drive the app. Mention `/pstack:create-verification-skill` when the question is about proving a change works.
 - No formal verification skill in the project means no property is checked past what tests reach. Mention `/pstack:create-formal-verification-skill` when the question is about a race, an invariant, or another case tests rarely hit. When one exists and the code it covers changed after the commit it records as last in sync, mention `/pstack:maintain-formal-verification-skill` if the question touches that code.
 
@@ -40,7 +40,7 @@ When the model rule is missing and it matters, ask whether the user wants to pic
 
 ## Get set up
 
-1. Install with `/plugin marketplace add pstack-pro/pstack-workbuddy`, then `/plugin install pstack@pstack-workbuddy`. Or copy `skills/` into `~/.codebuddy/skills/` (WorkBuddy desktop also reads `~/.workbuddy/skills/`). CodeBuddy has no `/add-plugin` command.
+1. Install with `/plugin marketplace add pstack-pro/pstack-workbuddy`, then `/plugin install pstack@pstack-workbuddy`. Or copy `skills/` into `~/.workbuddy/skills/`. WorkBuddy has no `/add-plugin` command.
 2. Run [`/pstack:setup-pstack`](../setup-pstack/SKILL.md). It asks for a reasoning budget, maps a model to each role, and writes a rule. The rule applies to new chats. Then it offers once each to generate a verification skill and a formal verification skill for the project, unless the project already has one.
 3. Start a real task with `/pstack:poteto-mode`, a goal, and a check that can pass or fail.
 
@@ -48,9 +48,9 @@ Installing changes nothing until the user invokes a skill. Only `/pstack:setup-p
 
 If cost is the worry, say where the tokens go and how to spend fewer. pstack spends extra tokens on subagents and review panels. Rerun `/pstack:setup-pstack` and pick a smaller budget or cheaper models. A role set to `auto` or `inherit-parent` runs on the chat's model, which saves tokens when the chat runs on Auto or a cheaper model. A shorter panel list runs fewer subagents, one for each entry. Save `/pstack:poteto-mode` for work that needs rigor.
 
-This copy is the WorkBuddy / CodeBuddy port. Plugin commands take a `pstack:` prefix, such as `/pstack:poteto-mode`. The [CodeBuddy adapter](../../docs/harness/codebuddy.md) maps what is left. A step that needs Bugbot or Cursor Automations is skipped with a one-line note. CodeBuddy has no Bugbot and no Cursor Automations.
+This copy is the WorkBuddy port. Plugin commands take a `pstack:` prefix, such as `/pstack:poteto-mode`. The [WorkBuddy adapter](../../docs/harness/workbuddy.md) maps what is left. A step that needs Bugbot or Cursor Automations is skipped with a one-line note. WorkBuddy has no Bugbot and no Cursor Automations.
 
-Manual copies of the skill folders still load, because they use the Agent Skills format. Workflow skills spawn CodeBuddy `Agent` subagents. CodeBuddy has no Custom Mode and no `/loop` command. The plugin hook is what keeps `/pstack:poteto-mode` on. See the adapter.
+Manual copies of the skill folders still load, because they use the Agent Skills format. Workflow skills spawn WorkBuddy `Agent` subagents. WorkBuddy has no Custom Mode and no `/loop` command. The plugin hook is what keeps `/pstack:poteto-mode` on. See the adapter.
 
 ## Start a task with `/pstack:poteto-mode`
 
@@ -59,10 +59,10 @@ Manual copies of the skill folders still load, because they use the Agent Skills
 Whether `/pstack:poteto-mode` stays on depends on how the user starts it:
 
 - Invoking the skill attaches it to that message.
-- With the plugin installed, a prompt that starts with `/pstack:poteto-mode` stays on for the session until `/pstack:poteto-mode off`. CodeBuddy has no Custom Mode.
+- With the plugin installed, a prompt that starts with `/pstack:poteto-mode` stays on for the session until `/pstack:poteto-mode off`. WorkBuddy has no Custom Mode.
 - A manual copy has no hook. Start each new task by invoking the skill again.
 
-Point at `docs/harness/codebuddy.md` when this comes up. CodeBuddy has no Custom Mode. Mid-chat, "new task" makes the mode match a fresh playbook. `/pstack:poteto-mode` already uses `poteto-agent` for the subagents its playbook steps spawn. To get the same style from a subagent of your own, spawn it with `subagent_type: "pstack:poteto-agent"`.
+Point at `docs/harness/workbuddy.md` when this comes up. WorkBuddy has no Custom Mode. Mid-chat, "new task" makes the mode match a fresh playbook. `/pstack:poteto-mode` already uses `poteto-agent` for the subagents its playbook steps spawn. To get the same style from a subagent of your own, spawn it with `subagent_type: "pstack:poteto-agent"`.
 
 ## Pick a skill
 
@@ -118,8 +118,8 @@ Close calls:
 
 Not in pstack:
 
-- `/deslop`, `control-cli`, and `control-ui` ship in the `cursor-team-kit` plugin, which CodeBuddy does not provide.
-- CodeBuddy has no `/loop` command and no built-in `create-skill`. Use the Autonomous run playbook and the authoring-a-skill playbook.
+- `/deslop`, `control-cli`, and `control-ui` ship in the `cursor-team-kit` plugin, which WorkBuddy does not provide.
+- WorkBuddy has no `/loop` command and no built-in `create-skill`. Use the Autonomous run playbook and the authoring-a-skill playbook.
 - pstack has no `/orchestrate` skill. Orchestrate is a `/pstack:poteto-mode` playbook. If the slash menu shows `/orchestrate`, another plugin provides it.
 
 ## Playbooks and principles
@@ -133,9 +133,9 @@ Playbooks are step lists inside `/pstack:poteto-mode`, not skills, so they have 
 - "full autopilot on this queue" runs Autopilot-full. "stack them, don't ship" runs Autopilot-stack.
 - "run the eval playbook" runs Eval.
 
-CodeBuddy has no built-in babysit skill. The Babysit playbook is the flow. The Playbooks section of [`poteto-mode`](../poteto-mode/SKILL.md) lists every playbook and when it applies. [Guide page 6](../../docs/guide/06-verify-and-ship.md) covers opening, babysitting, and landing a PR.
+WorkBuddy has no built-in babysit skill. The Babysit playbook is the flow. The Playbooks section of [`poteto-mode`](../poteto-mode/SKILL.md) lists every playbook and when it applies. [Guide page 6](../../docs/guide/06-verify-and-ship.md) covers opening, babysitting, and landing a PR.
 
-pstack has no planning skill. CodeBuddy plan mode is `EnterPlanMode` / `ExitPlanMode`. CodeBuddy has no separate Cursor Plan Mode product. For work that spans phases or stacked PRs, asking `/pstack:poteto-mode` for a plan runs the [Multi-phase plan playbook](../poteto-mode/playbooks/multi-phase-plan.md), which writes the plan and doesn't implement it. For a design question, the Prototype playbook or `/pstack:architect` settles it in code first.
+pstack has no planning skill. WorkBuddy's plan behavior is its built-in plan interaction mode. This plugin does not switch that mode. There is no separate Cursor Plan Mode product. For work that spans phases or stacked PRs, asking `/pstack:poteto-mode` for a plan runs the [Multi-phase plan playbook](../poteto-mode/playbooks/multi-phase-plan.md), which writes the plan and doesn't implement it. For a design question, the Prototype playbook or `/pstack:architect` settles it in code first.
 
 Principles are one-rule skills that `/pstack:poteto-mode` reads and cites in its replies. The user rarely invokes one. They steer with the names instead, as in "apply prove it works. show me the real output." Typing `/principle-<name>` still loads one on demand. [Guide page 8](../../docs/guide/08-principles.md) lists them.
 
@@ -143,13 +143,13 @@ Principles are one-rule skills that `/pstack:poteto-mode` reads and cites in its
 
 | Symptom | Fix |
 |---|---|
-| The mode stopped applying after a few turns | The plugin hook is off, or this was a manual copy. Start the next task with `/pstack:poteto-mode`, or send that command at the start of a prompt. CodeBuddy has no Custom Mode. |
+| The mode stopped applying after a few turns | The plugin hook is off, or this was a manual copy. Start the next task with `/pstack:poteto-mode`, or send that command at the start of a prompt. WorkBuddy has no Custom Mode. |
 | A question got treated as the next step of the last task | Say "new task", or say the turn doesn't need the mode. |
 | A new model choice had no effect | The rule from `/pstack:setup-pstack` applies to new chats. Start one. |
 | Runs cost more than expected | See the cost paragraph under Get set up. |
 | A skill didn't load on its own | Only `/pstack:setup-pstack` loads from the user's words. The others load when the user types them or when `/pstack:poteto-mode` runs them, and it doesn't run every skill. |
-| Parallel agents overwrote each other | Give each agent its own worktree (`isolation: "worktree"` or `EnterWorktree`). CodeBuddy has no Cursor cloud agents. |
-| An overnight run moved but finished nothing | CodeBuddy has no `/loop` command. The finish condition still has to pass or fail, not be a duration. See [guide page 7](../../docs/guide/07-overnight.md). |
+| Parallel agents overwrote each other | Give each agent its own worktree (`isolation: "worktree"` or `EnterWorktree`). WorkBuddy has no Cursor cloud agents. |
+| An overnight run moved but finished nothing | WorkBuddy has no `/loop` command. The finish condition still has to pass or fail, not be a duration. See [guide page 7](../../docs/guide/07-overnight.md). |
 | The reply claims success from a green build | Ask for the real command, flow, stored value, or profile. That's the prove-it-works principle. |
 
 For a run that drifts, [`references/prompting.md`](references/prompting.md) has one-line steers. [Guide page 10](../../docs/guide/10-recipes-and-pitfalls.md) has more pitfalls and the recipes worth copying.

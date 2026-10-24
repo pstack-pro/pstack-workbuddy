@@ -6,9 +6,9 @@ disable-model-invocation: true
 
 # Reflect
 
-> **CodeBuddy.** Read `docs/harness/codebuddy.md` (plugin root) before you follow the rest of this file.
-> Cursor compound slugs (`claude-opus-*-xhigh`, `grok-*-xhigh-fast`, `cursor-grok-*`, `composer-*`) are not CodeBuddy model ids. A bare name printed by `codebuddy --help` still has to be confirmed for this session. Read `~/.codebuddy/rules/pstack-models.md` and omit `model` when the role line is missing.
-> CodeBuddy has no Custom Mode, no `/loop` command, no Bugbot, no cursor-team-kit, and no Cursor Automations or cloud agents. `-fast` is not a CodeBuddy model suffix. Do not pass a field the Agent tool rejects.
+> **WorkBuddy.** Read `docs/harness/workbuddy.md` (plugin root) before you follow the rest of this file.
+> Cursor compound slugs (`claude-opus-*-xhigh`, `grok-*-xhigh-fast`, `cursor-grok-*`, `composer-*`) are not WorkBuddy model ids. Read `~/.workbuddy/pstack-models.md` and omit `model` when the role line is missing.
+> WorkBuddy has no Custom Mode, no `/loop` command, no Bugbot, no cursor-team-kit, and no Cursor Automations or cloud agents. `-fast` is not a model-id suffix. Do not pass a field the Agent tool rejects.
 
 
 Mine the current conversation for durable learnings, then route them into skill edits.
@@ -17,7 +17,7 @@ Invoke when the user says "reflect" or "/pstack:reflect". Skip when the conversa
 
 ## 1. Locate the active transcript
 
-Before fanning out, find this conversation's transcript in the `session transcripts (CodeBuddy does not document an agent-transcripts directory) /` directory the system prompt names. Do not glob across `~/.codebuddy/projects/*/`. That crosses workspace boundaries and reads private chats from unrelated projects.
+Before fanning out, find this conversation's transcript in the `session transcripts (WorkBuddy does not document an agent-transcripts directory) /` directory the system prompt names. Do not glob across `a guessed session directory`. That crosses workspace boundaries and reads private chats from unrelated projects.
 
 ```bash
 ls -t <agent-transcripts>/*.jsonl <agent-transcripts>/*/*.jsonl <agent-transcripts>/*/subagents/*.jsonl 2>/dev/null | head -10
@@ -53,12 +53,12 @@ Present the synthesizer's full Accepted / Rejected / Backlog output and wait for
 
 File each Backlog item to your team's devex or backlog tracker without waiting. Only the Accepted list waits for approval.
 
-Never edit a skill under `plugins/cache/`. Before approval, show its destination, `.codebuddy/skills/<skill>/` or `~/.codebuddy/skills/<skill>/`. After approval, copy the skill folder there and edit the copy. Never open a PR or push.
+Never edit a skill under `plugins/cache/`. Before approval, show its destination, `.workbuddy/skills/<skill>/` or `~/.workbuddy/skills/<skill>/`. After approval, copy the skill folder there and edit the copy. Never open a PR or push.
 
 Follow each approved row's Routing exactly:
 
 - Trivial existing-skill edit (a one-line bullet, a tightened sentence, a stale fact corrected): the parent does it directly.
-- Substantive existing-skill edit (a new section, a new pattern table, more than ~10 lines): hand to the **authoring-a-skill** playbook (CodeBuddy has no built-in `create-skill`) and run its draft / test / iterate loop.
+- Substantive existing-skill edit (a new section, a new pattern table, more than ~10 lines): hand to the **authoring-a-skill** playbook (WorkBuddy has no built-in `create-skill`) and run its draft / test / iterate loop.
 - `tune description: <skill path>` (the skill exists but didn't trigger when it should have): hand to `create-skill` and run its description-optimization loop.
 - `new skill via create-skill: <kebab-name>`: hand creation to `create-skill`. Do not invent the shape ad hoc.
 

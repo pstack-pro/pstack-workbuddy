@@ -1,7 +1,7 @@
-pstack-workbuddy is an unofficial community port of pstack for Tencent WorkBuddy and CodeBuddy Code.
+pstack-workbuddy is an unofficial community port of pstack for Tencent WorkBuddy.
 
 The pstack skill, agent, and guide text is Copyright (c) 2026 Lauren Tan, used under the MIT license in the LICENSE file. Upstream: https://github.com/cursor/plugins/tree/main/pstack
 
 This repository is not affiliated with, endorsed by, or maintained by Cursor or Tencent.
 
-Port-specific files (the port and validation scripts, hooks, install docs, the CodeBuddy harness notes, and CI) are Copyright (c) 2026 pstack-pro and are covered by the same MIT license.
+Port-specific files (the port and validation scripts, hooks, install docs, the WorkBuddy harness notes, and CI) are Copyright (c) 2026 pstack-pro and are covered by the same MIT license.

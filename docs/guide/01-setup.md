@@ -1,22 +1,22 @@
 # Set up pstack
 
-> **CodeBuddy.** Read `docs/harness/codebuddy.md` (plugin root) before you follow the rest of this file.
-> Cursor compound slugs (`claude-opus-*-xhigh`, `grok-*-xhigh-fast`, `cursor-grok-*`, `composer-*`) are not CodeBuddy model ids. A bare name printed by `codebuddy --help` still has to be confirmed for this session. Read `~/.codebuddy/rules/pstack-models.md` and omit `model` when the role line is missing.
-> CodeBuddy has no Custom Mode, no `/loop` command, no Bugbot, no cursor-team-kit, and no Cursor Automations or cloud agents. `-fast` is not a CodeBuddy model suffix. Do not pass a field the Agent tool rejects.
+> **WorkBuddy.** Read `docs/harness/workbuddy.md` (plugin root) before you follow the rest of this file.
+> Cursor compound slugs (`claude-opus-*-xhigh`, `grok-*-xhigh-fast`, `cursor-grok-*`, `composer-*`) are not WorkBuddy model ids. Read `~/.workbuddy/pstack-models.md` and omit `model` when the role line is missing.
+> WorkBuddy has no Custom Mode, no `/loop` command, no Bugbot, no cursor-team-kit, and no Cursor Automations or cloud agents. `-fast` is not a model-id suffix. Do not pass a field the Agent tool rejects.
 
 
 In this page you install the plugin, pick which models pstack uses, and run your first task. Setup is one command plus a short conversation.
 
 ## Install the plugin
 
-This guide is the WorkBuddy / CodeBuddy port. Plugin commands use the `/pstack:` prefix. CodeBuddy has no `/add-plugin` command.
+This guide is the WorkBuddy port. Plugin commands use the `/pstack:` prefix. WorkBuddy has no `/add-plugin` command.
 
 ```text
 /plugin marketplace add pstack-pro/pstack-workbuddy
 /plugin install pstack@pstack-workbuddy
 ```
 
-A manual copy of `skills/` into `~/.codebuddy/skills/` or `~/.workbuddy/skills/` also loads. Those copies have no `pstack:` prefix and no sticky-mode hook. The [CodeBuddy adapter](../harness/codebuddy.md) covers the other differences. `/pstack:setup-pstack` writes `~/.codebuddy/rules/pstack-models.md`.
+A manual copy of `skills/` into `~/.workbuddy/skills/` also loads. That copy has no `pstack:` prefix and no sticky-mode hook. The [WorkBuddy adapter](../harness/workbuddy.md) covers the other differences. `/pstack:setup-pstack` writes `~/.workbuddy/pstack-models.md`. The session hook injects that file. WorkBuddy does not auto-load a rules directory for it.
 
 ## Pick your models
 
@@ -26,7 +26,7 @@ Run:
 /pstack:setup-pstack
 ```
 
-[`/pstack:setup-pstack`](../../skills/setup-pstack/SKILL.md) detects the models you have access to, asks for a reasoning budget, shows you each role (code delegates, judgment, the review panels), and asks what you want. Answer the questions. It writes `~/.codebuddy/rules/pstack-models.md`, a small rule every pstack skill reads.
+[`/pstack:setup-pstack`](../../skills/setup-pstack/SKILL.md) detects the models you have access to, asks for a reasoning budget, shows you each role (code delegates, judgment, the review panels), and asks what you want. Answer the questions. It writes `~/.workbuddy/pstack-models.md`, a small rule every pstack skill reads.
 
 The defaults run at `xhigh` reasoning, the same as the `large` budget. `unlimited` lifts each model to its highest tier, up to `max`. Opus goes to `max`. Grok tops out at `xhigh`, so it stays there. `medium` and `small` lower the reasoning and spend fewer tokens.
 
@@ -38,7 +38,7 @@ You might be wondering what happens if you use Auto. Set a role to `inherit-pare
 
 At the end of setup, `/pstack:setup-pstack` looks for a way to prove app behavior in your project, either a `verify-*` skill or an existing harness. If it finds neither, it offers once to generate one with [`/pstack:create-verification-skill`](../../skills/create-verification-skill/SKILL.md).
 
-Say yes and it writes `.codebuddy/skills/verify-<app>/`, a project-local skill that teaches agents to drive your app the way a user does. It proves the skill works once before handing it over. Say no and setup moves on. You can run `/pstack:create-verification-skill` yourself any time. [Verify and ship](./06-verify-and-ship.md#create-a-project-verification-skill) covers it in depth.
+Say yes and it writes `.workbuddy/skills/verify-<app>/`, a project-local skill that teaches agents to drive your app the way a user does. It proves the skill works once before handing it over. Say no and setup moves on. You can run `/pstack:create-verification-skill` yourself any time. [Verify and ship](./06-verify-and-ship.md#create-a-project-verification-skill) covers it in depth.
 
 If you're new to pstack, say yes. An agent that can check its own work keeps going until the check passes. An agent that can't hands every result back to you to check by hand. Of everything in this guide, the verification skill pays off the most.
 
@@ -65,6 +65,6 @@ Pick something real but small, and describe it the way you'd describe it to a co
 
 Watch the todo list. Its first items are the matched playbook's steps copied in, the Feature playbook for this prompt. If `/pstack:poteto-mode` skips a step, the step stays in the list with `skip: <reason>`, so you can see what it chose not to do.
 
-From here you can type normal follow-ups. CodeBuddy has no Custom Mode. With the plugin installed, a later prompt stays in poteto-mode until you send `/pstack:poteto-mode off`. A manual skill copy applies the skill to one message. Invoke it again on the next task.
+From here you can type normal follow-ups. WorkBuddy has no Custom Mode. With the plugin installed, a later prompt stays in poteto-mode until you send `/pstack:poteto-mode off`. A manual skill copy applies the skill to one message. Invoke it again on the next task.
 
 Next: [Route work through `/pstack:poteto-mode`](./02-poteto-mode.md).

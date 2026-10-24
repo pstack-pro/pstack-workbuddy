@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # TypeScript best practices
 
-CodeBuddy skill frontmatter has no `paths` field. Apply this skill when you read or edit `.ts` or `.tsx` files.
+WorkBuddy skill frontmatter has no `paths` field. Apply this skill when you read or edit `.ts` or `.tsx` files.
 
 Apply the **type-system-discipline** principle skill first.
 
