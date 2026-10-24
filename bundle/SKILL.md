@@ -115,11 +115,14 @@ For sticky mode and the real agents, install the plugin. Add the marketplace `ps
 
 ## SkillHub packaging notes
 
-SkillHub rejects a file with no extension and skips images, so this zip renames two text files and leaves the guide pictures out. The repo copies keep the original names.
+SkillHub only accepts `.md`, `.txt`, `.json`, `.ts`, `.mjs`, `.js`, `.sh`, `.py`, `.yaml`, and `.yml`. This zip drops or renames anything else. The repo copies keep the original names.
 
-The license text is `LICENSE.md`. The port notice is `NOTICE.md`.
-
-When a skill says to run `scripts/watch-pr/watch-pr`, run `bun skills/poteto-mode/scripts/watch-pr/watch-pr.ts` with the same arguments.
+- The license text is `LICENSE.md`. The port notice is `NOTICE.md`.
+- Guide pictures are left out, and the bundled guide pages do not reference them.
+- `skills/poteto-mode/scripts/bun.lock` is left out. bun recreates it.
+- `skills/statechart/scripts/test/` is left out. Those files are test fixtures, including `.mmd` charts, and are not needed at runtime.
+- `skills/show-me-your-work/references/decision-log-template.tsv` ships as `skills/show-me-your-work/references/decision-log-template.txt` with the same content. When a skill says to copy `references/decision-log-template.tsv`, copy that `.txt` file.
+- When a skill says to run `scripts/watch-pr/watch-pr`, run `bun skills/poteto-mode/scripts/watch-pr/watch-pr.ts` with the same arguments.
 
 ## Credits
 

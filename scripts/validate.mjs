@@ -288,39 +288,7 @@ function scanBanned(dir) {
 		problems.push(`${rel}: contains ${banned}: ${line.trim().slice(0, 140)}`);
 	}
 }
-const BUNDLE_BLOCKED_EXT = new Set([
-	".jpg",
-	".jpeg",
-	".png",
-	".gif",
-	".webp",
-	".bmp",
-	".ico",
-	".svg",
-	".avif",
-	".tif",
-	".tiff",
-	".pdf",
-	".zip",
-	".gz",
-	".tgz",
-	".woff",
-	".woff2",
-	".ttf",
-	".otf",
-	".eot",
-	".mp3",
-	".mp4",
-	".wav",
-	".webm",
-	".mov",
-	".avi",
-	".bin",
-	".exe",
-	".dll",
-	".so",
-	".dylib",
-]);
+const BUNDLE_ALLOWED_EXT = new Set([".md", ".txt", ".json", ".ts", ".mjs", ".js", ".sh", ".py", ".yaml", ".yml"]);
 
 function scanBundleZip() {
 	const zipPath = path.join(root, "dist", `pstack-${upstream.pstack}.zip`);
@@ -337,8 +305,7 @@ function scanBundleZip() {
 		execFileSync("unzip", ["-q", zipPath, "-d", unpacked]);
 		for (const name of listed) {
 			const ext = path.posix.extname(path.posix.basename(name)).toLowerCase();
-			if (!ext) problems.push(`bundle extensionless file: ${name}`);
-			if (BUNDLE_BLOCKED_EXT.has(ext)) problems.push(`bundle binary or image: ${name}`);
+			if (!BUNDLE_ALLOWED_EXT.has(ext)) problems.push(`bundle extension not on the SkillHub allowlist: ${name}`);
 			const body = fs.readFileSync(path.join(unpacked, name));
 			if (body.includes(0)) problems.push(`bundle binary content: ${name}`);
 		}

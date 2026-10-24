@@ -125,7 +125,7 @@ Hard failures: leftover `AskQuestion`, `generalPurpose`, a `.cursor/` path, `pst
 - `node scripts/validate.mjs`.
 - Hook fixtures: help does not stick, `/pstack:poteto-mode` sticks, a later turn re-injects, another `session_id` stays off, `off` clears, bare `/poteto-mode` sticks. The model file is read from `~/.workbuddy/pstack-models.md`.
 - `node scripts/bundle.mjs` writes `dist/pstack-<version>.zip` with `SKILL.md` at the zip root and each skill at `skills/<name>/SKILL.md`. The build fails when the file count passes 200, the zip or its uncompressed size passes 10MB, the version is not SemVer, or the SkillHub slug is not `pstack`.
-- SkillHub upload rejects an extensionless name and skips images. The zip ships `LICENSE.md`, `NOTICE.md`, and `skills/poteto-mode/scripts/watch-pr/watch-pr.ts` (the bun launcher, same bytes). Guide images are omitted, and the bundled `docs/guide/*.md` copies drop those image tags. Repo files keep their original names. Skill bodies are not edited.
+- SkillHub upload allows only `.md`, `.txt`, `.json`, `.ts`, `.mjs`, `.js`, `.sh`, `.py`, `.yaml`, and `.yml`. The zip ships `LICENSE.md`, `NOTICE.md`, `skills/poteto-mode/scripts/watch-pr/watch-pr.ts` (the bun launcher, same bytes), and `skills/show-me-your-work/references/decision-log-template.txt` (same bytes as the `.tsv`). It omits guide images, `skills/poteto-mode/scripts/bun.lock` (bun recreates it), and `skills/statechart/scripts/test/` (fixtures, including `.mmd`). Bundled `docs/guide/*.md` copies drop image tags. Repo files keep their original names. Skill bodies are not edited.
 
 ## Verified on WorkBuddy 5.8.3
 

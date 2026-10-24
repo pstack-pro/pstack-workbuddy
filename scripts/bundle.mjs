@@ -24,7 +24,12 @@ const RENAMES = {
 	LICENSE: "LICENSE.md",
 	NOTICE: "NOTICE.md",
 	"skills/poteto-mode/scripts/watch-pr/watch-pr": "skills/poteto-mode/scripts/watch-pr/watch-pr.ts",
+	"skills/show-me-your-work/references/decision-log-template.tsv":
+		"skills/show-me-your-work/references/decision-log-template.txt",
 };
+const SKIP_FILES = new Set(["skills/poteto-mode/scripts/bun.lock"]);
+const SKIP_PREFIXES = ["skills/statechart/scripts/test/"];
+const ALLOWED_EXT = new Set([".md", ".txt", ".json", ".ts", ".mjs", ".js", ".sh", ".py", ".yaml", ".yml"]);
 const BLOCKED_EXT = new Set([
 	".jpg",
 	".jpeg",
@@ -276,6 +281,12 @@ function listRepoFiles() {
 	return found.sort();
 }
 
+function skipped(rel) {
+	if (SKIP_FILES.has(rel)) return true;
+	if (SKIP_PREFIXES.some((prefix) => rel.startsWith(prefix))) return true;
+	return BLOCKED_EXT.has(extensionOf(rel));
+}
+
 function sourceOf(destRel) {
 	for (const [from, to] of Object.entries(RENAMES)) {
 		if (to === destRel) return from;
@@ -331,10 +342,10 @@ if (rendered !== fs.readFileSync(skillFile, "utf8")) {
 const stage = fs.mkdtempSync(path.join(os.tmpdir(), "pstack-bundle-"));
 try {
 	for (const rel of listRepoFiles()) {
-		const ext = extensionOf(rel);
-		if (!ext && !RENAMES[rel]) fail(`refusing extensionless file ${rel}`);
-		if (BLOCKED_EXT.has(ext)) continue;
+		if (skipped(rel)) continue;
 		const destRel = RENAMES[rel] || rel;
+		const destExt = extensionOf(destRel);
+		if (!ALLOWED_EXT.has(destExt)) fail(`SkillHub allowlist rejects ${destRel}`);
 		const dest = path.join(stage, destRel);
 		fs.mkdirSync(path.dirname(dest), { recursive: true });
 		if (destRel.startsWith("docs/guide/") && destRel.endsWith(".md")) {
@@ -352,8 +363,7 @@ try {
 	for (const file of copied) {
 		const rel = posix(path.relative(stage, file));
 		if (rel === "SKILL.md") continue;
-		if (extensionOf(rel) === "") fail(`staged extensionless file ${rel}`);
-		if (BLOCKED_EXT.has(extensionOf(rel))) fail(`staged binary or image ${rel}`);
+		if (!ALLOWED_EXT.has(extensionOf(rel))) fail(`staged file is not on the SkillHub allowlist: ${rel}`);
 		if (fs.readFileSync(file).includes(0)) fail(`staged binary content ${rel}`);
 		const sourceRel = sourceOf(rel);
 		const source = path.join(root, sourceRel);
@@ -422,8 +432,16 @@ try {
 	if (listed.some((name) => name === "hooks" || name.startsWith("hooks/"))) fail("zip contains hooks");
 	if (zipFiles.length !== copied.length) fail(`zip lists ${zipFiles.length} files, staged ${copied.length}`);
 	for (const name of zipFiles) {
-		if (extensionOf(name) === "") fail(`zip extensionless file ${name}`);
-		if (BLOCKED_EXT.has(extensionOf(name))) fail(`zip binary or image ${name}`);
+		if (!ALLOWED_EXT.has(extensionOf(name))) fail(`zip file is not on the SkillHub allowlist: ${name}`);
+	}
+	if (zipFiles.some((name) => name === "skills/poteto-mode/scripts/bun.lock" || name.startsWith("skills/statechart/scripts/test/"))) {
+		fail("zip still contains bun.lock or statechart test fixtures");
+	}
+	if (!zipFiles.includes("skills/show-me-your-work/references/decision-log-template.txt")) {
+		fail("zip is missing decision-log-template.txt");
+	}
+	if (zipFiles.includes("skills/show-me-your-work/references/decision-log-template.tsv")) {
+		fail("zip still ships decision-log-template.tsv");
 	}
 	if (!zipFiles.includes("LICENSE.md") || !zipFiles.includes("NOTICE.md")) fail("zip is missing LICENSE.md or NOTICE.md");
 	if (zipFiles.includes("LICENSE") || zipFiles.includes("NOTICE")) fail("zip still ships LICENSE or NOTICE without an extension");
