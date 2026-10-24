@@ -19,7 +19,45 @@ const SEMVER = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z-]+(?:\.[
 const MAX_FILES = 200;
 const MAX_BYTES = 10 * 1024 * 1024;
 const COPY_DIRS = ["skills", "docs", "agents"];
-const COPY_FILES = ["LICENSE", "NOTICE", "README.md", "PORTING.md"];
+const COPY_FILES = ["README.md", "PORTING.md", "LICENSE", "NOTICE"];
+const RENAMES = {
+	LICENSE: "LICENSE.md",
+	NOTICE: "NOTICE.md",
+	"skills/poteto-mode/scripts/watch-pr/watch-pr": "skills/poteto-mode/scripts/watch-pr/watch-pr.ts",
+};
+const BLOCKED_EXT = new Set([
+	".jpg",
+	".jpeg",
+	".png",
+	".gif",
+	".webp",
+	".bmp",
+	".ico",
+	".svg",
+	".avif",
+	".tif",
+	".tiff",
+	".pdf",
+	".zip",
+	".gz",
+	".tgz",
+	".woff",
+	".woff2",
+	".ttf",
+	".otf",
+	".eot",
+	".mp3",
+	".mp4",
+	".wav",
+	".webm",
+	".mov",
+	".avi",
+	".bin",
+	".exe",
+	".dll",
+	".so",
+	".dylib",
+]);
 const TAGS = ["pstack", "poteto", "workbuddy", "workflow", "agent-skills", "code-review", "verification"];
 
 function fail(message) {
@@ -205,6 +243,46 @@ function resolves(fromDir, target) {
 
 // Fail when the bundle drops a file a markdown link could already open in the repo.
 // Placeholder targets and upstream paths this port does not ship stay as written.
+function posix(rel) {
+	return rel.split(path.sep).join("/");
+}
+
+function extensionOf(rel) {
+	return path.posix.extname(path.posix.basename(rel)).toLowerCase();
+}
+
+function stripGuideImages(markdown) {
+	return markdown
+		.split("\n")
+		.filter((line) => !/!\[[^\]]*\]\([^)]*\.(?:jpe?g|png|gif|webp|bmp|ico|svg|avif|tiff?)\)\s*$/i.test(line.replace(/\r$/u, "")))
+		.join("\n");
+}
+
+function retargetRootDocs(markdown) {
+	return markdown.replaceAll("](LICENSE)", "](LICENSE.md)").replaceAll("](NOTICE)", "](NOTICE.md)");
+}
+
+function listRepoFiles() {
+	const found = [];
+	for (const dir of COPY_DIRS) {
+		const abs = path.join(root, dir);
+		if (!fs.existsSync(abs)) fail(`missing ${dir}/`);
+		walk(abs, (file) => found.push(posix(path.relative(root, file))));
+	}
+	for (const file of COPY_FILES) {
+		if (!fs.existsSync(path.join(root, file))) fail(`missing ${file}`);
+		found.push(file);
+	}
+	return found.sort();
+}
+
+function sourceOf(destRel) {
+	for (const [from, to] of Object.entries(RENAMES)) {
+		if (to === destRel) return from;
+	}
+	return destRel;
+}
+
 function checkLinks(dir) {
 	const broken = [];
 	walk(dir, (file) => {
@@ -252,26 +330,51 @@ if (rendered !== fs.readFileSync(skillFile, "utf8")) {
 
 const stage = fs.mkdtempSync(path.join(os.tmpdir(), "pstack-bundle-"));
 try {
-	for (const dir of COPY_DIRS) {
-		const from = path.join(root, dir);
-		if (!fs.existsSync(from)) fail(`missing ${dir}/`);
-		fs.cpSync(from, path.join(stage, dir), { recursive: true, dereference: true });
-	}
-	for (const file of COPY_FILES) {
-		const from = path.join(root, file);
-		if (!fs.existsSync(from)) fail(`missing ${file}`);
-		fs.copyFileSync(from, path.join(stage, file));
+	for (const rel of listRepoFiles()) {
+		const ext = extensionOf(rel);
+		if (!ext && !RENAMES[rel]) fail(`refusing extensionless file ${rel}`);
+		if (BLOCKED_EXT.has(ext)) continue;
+		const destRel = RENAMES[rel] || rel;
+		const dest = path.join(stage, destRel);
+		fs.mkdirSync(path.dirname(dest), { recursive: true });
+		if (destRel.startsWith("docs/guide/") && destRel.endsWith(".md")) {
+			fs.writeFileSync(dest, stripGuideImages(fs.readFileSync(path.join(root, rel), "utf8")));
+		} else if (destRel === "README.md") {
+			fs.writeFileSync(dest, retargetRootDocs(fs.readFileSync(path.join(root, rel), "utf8")));
+		} else {
+			fs.copyFileSync(path.join(root, rel), dest);
+		}
 	}
 	fs.writeFileSync(path.join(stage, "SKILL.md"), rendered);
 
 	const copied = [];
 	walk(stage, (file) => copied.push(file));
 	for (const file of copied) {
-		const rel = path.relative(stage, file);
+		const rel = posix(path.relative(stage, file));
 		if (rel === "SKILL.md") continue;
-		const source = path.join(root, rel);
+		if (extensionOf(rel) === "") fail(`staged extensionless file ${rel}`);
+		if (BLOCKED_EXT.has(extensionOf(rel))) fail(`staged binary or image ${rel}`);
+		if (fs.readFileSync(file).includes(0)) fail(`staged binary content ${rel}`);
+		const sourceRel = sourceOf(rel);
+		const source = path.join(root, sourceRel);
 		if (!fs.existsSync(source)) fail(`staged ${rel} is not in the repo`);
+		if (rel.startsWith("docs/guide/") && rel.endsWith(".md")) {
+			const want = stripGuideImages(fs.readFileSync(source, "utf8"));
+			if (fs.readFileSync(file, "utf8") !== want) fail(`guide transform drifted for ${rel}`);
+			continue;
+		}
+		if (rel === "README.md") {
+			const want = retargetRootDocs(fs.readFileSync(source, "utf8"));
+			if (fs.readFileSync(file, "utf8") !== want) fail("README link rewrite drifted");
+			continue;
+		}
 		if (sha256(file) !== sha256(source)) fail(`staged ${rel} does not match the repo byte for byte`);
+	}
+	for (const [name] of skills) {
+		const rel = `skills/${name}/SKILL.md`;
+		const staged = path.join(stage, rel);
+		const source = path.join(root, rel);
+		if (!fs.existsSync(staged) || sha256(staged) !== sha256(source)) fail(`skill body changed: ${rel}`);
 	}
 	if (copied.some((file) => path.relative(stage, file).startsWith(`hooks${path.sep}`) || path.relative(stage, file) === "hooks")) {
 		fail("hooks must not be in the bundle");
@@ -318,6 +421,14 @@ try {
 	if (listed.some((name) => name.startsWith("/") || name.split("/").includes(".."))) fail("zip path escapes the root");
 	if (listed.some((name) => name === "hooks" || name.startsWith("hooks/"))) fail("zip contains hooks");
 	if (zipFiles.length !== copied.length) fail(`zip lists ${zipFiles.length} files, staged ${copied.length}`);
+	for (const name of zipFiles) {
+		if (extensionOf(name) === "") fail(`zip extensionless file ${name}`);
+		if (BLOCKED_EXT.has(extensionOf(name))) fail(`zip binary or image ${name}`);
+	}
+	if (!zipFiles.includes("LICENSE.md") || !zipFiles.includes("NOTICE.md")) fail("zip is missing LICENSE.md or NOTICE.md");
+	if (zipFiles.includes("LICENSE") || zipFiles.includes("NOTICE")) fail("zip still ships LICENSE or NOTICE without an extension");
+	if (!zipFiles.includes("skills/poteto-mode/scripts/watch-pr/watch-pr.ts")) fail("zip is missing watch-pr.ts");
+	if (zipFiles.includes("skills/poteto-mode/scripts/watch-pr/watch-pr")) fail("zip still ships extensionless watch-pr");
 	const zipNested = zipFiles.filter((name) => /^skills\/[^/]+\/SKILL\.md$/u.test(name));
 	if (zipNested.length !== skills.length) fail(`zip nested skills ${zipNested.length} != ${skills.length}`);
 

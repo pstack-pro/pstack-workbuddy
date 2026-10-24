@@ -65,6 +65,8 @@ unzip -o -d ~/.workbuddy/skills/pstack dist/pstack-0.15.32.zip
 
 也可以在 SkillHub 安装，slug 是 `pstack`。WorkBuddy 5.8.3 会发现里面 `skills/<名字>/SKILL.md` 这一层，每个技能单独可调用，命令不带 `pstack:` 前缀，例如 `/setup-pstack`、`/poteto-mode`。列表没刷新就重启 WorkBuddy。
 
+SkillHub 不收没有扩展名的文件，也会跳过图片。这个 zip 里许可证是 `LICENSE.md`，移植说明是 `NOTICE.md`，指南图片没有打进去。技能若写着运行 `scripts/watch-pr/watch-pr`，包里的文件是 `skills/poteto-mode/scripts/watch-pr/watch-pr.ts`，用 `bun` 加上原来的参数运行。
+
 这次安装带上技能、指南和 `agents/` 里的参考文档。钩子不在包里：`/poteto-mode` 每开一个新任务要再调用一次，`~/.workbuddy/pstack-models.md` 也不会在会话开始时注入，技能要模型角色时直接读那个文件。`agents/poteto-agent.md` 和 `agents/comment-sicko.md` 没有注册成子代理。技能若要求 `pstack:poteto-agent` 或 `pstack:comment-sicko`，用 `general-purpose` 子代理，把对应文档的正文和本目录 `skills/poteto-mode/SKILL.md` 的绝对路径写进提示。要跨回合保持和注册好的代理，用上面的插件市场安装 `pstack@pstack-workbuddy`。
 
 ## 开始
@@ -107,6 +109,6 @@ Unofficial community port of [pstack](https://github.com/cursor/plugins/tree/mai
 
 The live config root is `~/.workbuddy/`. Install from this repo's `.workbuddy-plugin/marketplace.json` (GitHub repo or zip), then install `pstack@pstack-workbuddy`. Or copy `skills/` into `~/.workbuddy/skills/`. A manual copy has no `pstack:` prefix and does not load hooks.
 
-`node scripts/bundle.mjs` writes `dist/pstack-<version>.zip` for SkillHub and WorkBuddy's skill upload. Unzip it to `~/.workbuddy/skills/pstack/`, or install slug `pstack` from SkillHub. Nested `skills/<name>/SKILL.md` files show up as their own commands. That install leaves out hooks and does not register the files in `agents/`.
+`node scripts/bundle.mjs` writes `dist/pstack-<version>.zip` for SkillHub and WorkBuddy's skill upload. Unzip it to `~/.workbuddy/skills/pstack/`, or install slug `pstack` from SkillHub. Nested `skills/<name>/SKILL.md` files show up as their own commands. That install leaves out hooks and does not register the files in `agents/`. The zip names the license `LICENSE.md` and the port notice `NOTICE.md`, drops guide images, and ships the bun launcher as `skills/poteto-mode/scripts/watch-pr/watch-pr.ts`.
 
 Then `/pstack:setup-pstack`, which reads model `id` fields from `~/.workbuddy/models.json` and writes `~/.workbuddy/pstack-models.md`. The session hook injects that file. `/pstack:poteto-mode <task>` stays on until `/pstack:poteto-mode off`. Details are in [PORTING.md](PORTING.md). The MIT text in [LICENSE](LICENSE) is Lauren Tan's.

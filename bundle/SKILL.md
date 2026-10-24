@@ -30,7 +30,7 @@ If a command is not in the list, read `skills/<name>/SKILL.md` in this folder an
 
 ## Paths
 
-This folder is the `<plugin>` root that the skills mean. It holds `skills/`, `docs/`, `agents/`, `LICENSE`, and `NOTICE`. Read `docs/harness/workbuddy.md` before you follow a skill that asks for it. It maps Cursor tools, subagents, models, and paths to WorkBuddy. The user guide is `docs/guide/README.md`.
+This folder is the `<plugin>` root that the skills mean. It holds `skills/`, `docs/`, `agents/`, `LICENSE.md`, and `NOTICE.md`. Read `docs/harness/workbuddy.md` before you follow a skill that asks for it. It maps Cursor tools, subagents, models, and paths to WorkBuddy. The user guide is `docs/guide/README.md`.
 
 ## Skills
 
@@ -113,6 +113,14 @@ For sticky mode and the real agents, install the plugin. Add the marketplace `ps
 /plugin install pstack@pstack-workbuddy
 ```
 
+## SkillHub packaging notes
+
+SkillHub rejects a file with no extension and skips images, so this zip renames two text files and leaves the guide pictures out. The repo copies keep the original names.
+
+The license text is `LICENSE.md`. The port notice is `NOTICE.md`.
+
+When a skill says to run `scripts/watch-pr/watch-pr`, run `bun skills/poteto-mode/scripts/watch-pr/watch-pr.ts` with the same arguments.
+
 ## Credits
 
-pstack is by Lauren Tan (poteto), upstream at https://github.com/cursor/plugins/tree/main/pstack. The skill, agent, and guide text is Copyright (c) 2026 Lauren Tan and is used under the MIT license in `LICENSE`. The WorkBuddy port is by pstack-pro (https://github.com/pstack-pro/pstack-workbuddy). See `NOTICE`. This bundle is not affiliated with Cursor or Tencent.
+pstack is by Lauren Tan (poteto), upstream at https://github.com/cursor/plugins/tree/main/pstack. The skill, agent, and guide text is Copyright (c) 2026 Lauren Tan and is used under the MIT license in `LICENSE.md`. The WorkBuddy port is by pstack-pro (https://github.com/pstack-pro/pstack-workbuddy). See `NOTICE.md`. This bundle is not affiliated with Cursor or Tencent.

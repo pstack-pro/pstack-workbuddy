@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Checks the ported tree: skill frontmatter, unique names, and Cursor leftovers.
 // Also runs the sticky-mode and session-start hooks against fixture stdin.
-import { spawnSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
@@ -288,11 +288,71 @@ function scanBanned(dir) {
 		problems.push(`${rel}: contains ${banned}: ${line.trim().slice(0, 140)}`);
 	}
 }
+const BUNDLE_BLOCKED_EXT = new Set([
+	".jpg",
+	".jpeg",
+	".png",
+	".gif",
+	".webp",
+	".bmp",
+	".ico",
+	".svg",
+	".avif",
+	".tif",
+	".tiff",
+	".pdf",
+	".zip",
+	".gz",
+	".tgz",
+	".woff",
+	".woff2",
+	".ttf",
+	".otf",
+	".eot",
+	".mp3",
+	".mp4",
+	".wav",
+	".webm",
+	".mov",
+	".avi",
+	".bin",
+	".exe",
+	".dll",
+	".so",
+	".dylib",
+]);
+
+function scanBundleZip() {
+	const zipPath = path.join(root, "dist", `pstack-${upstream.pstack}.zip`);
+	if (!fs.existsSync(zipPath)) {
+		problems.push("bundle zip was not written");
+		return;
+	}
+	const listed = execFileSync("zipinfo", ["-1", zipPath], { encoding: "utf8" })
+		.split("\n")
+		.map((line) => line.trim())
+		.filter((line) => line && !line.endsWith("/"));
+	const unpacked = fs.mkdtempSync(path.join(os.tmpdir(), "pstack-bundle-scan-"));
+	try {
+		execFileSync("unzip", ["-q", zipPath, "-d", unpacked]);
+		for (const name of listed) {
+			const ext = path.posix.extname(path.posix.basename(name)).toLowerCase();
+			if (!ext) problems.push(`bundle extensionless file: ${name}`);
+			if (BUNDLE_BLOCKED_EXT.has(ext)) problems.push(`bundle binary or image: ${name}`);
+			const body = fs.readFileSync(path.join(unpacked, name));
+			if (body.includes(0)) problems.push(`bundle binary content: ${name}`);
+		}
+	} finally {
+		fs.rmSync(unpacked, { recursive: true, force: true });
+	}
+}
+
 const bundled = spawnSync(process.execPath, [path.join(root, "scripts", "bundle.mjs"), "--check"], {
 	cwd: root,
 	stdio: "inherit",
 });
 if (bundled.status !== 0) problems.push("SkillHub bundle check failed");
+else scanBundleZip();
 
 scanBanned(root);
 
